@@ -86,7 +86,7 @@
             tools:layout_editor_absoluteY="46dp" />
 
     </LinearLayout>
-
+<!--    kk-->
     <LinearLayout
         android:id="@+id/menuDrawer"
         android:layout_width="120dp"
