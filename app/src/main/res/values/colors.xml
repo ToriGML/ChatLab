@@ -10,4 +10,6 @@
     <color name="backgroundPadrao">#1D267D</color>
     <color name="backgroundInputPadrao">#0C134F</color>
     <color name="fontAndImagesColorPadrao">#D8D3E0</color>
+    <color name="lightPurplePadrao">#5C469C</color>
+    <color name="linkTransparente">#00AFFF</color>
 </resources>
