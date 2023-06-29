@@ -18,10 +18,11 @@
             android:layout_height="40dp"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
+            android:onClick="openSidebar"
             android:src="@drawable/ic_menu"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:onClick="openSidebar"/>
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mensagens"
@@ -37,14 +38,14 @@
             android:layout_height="48dp"
             android:layout_marginBottom="14dp"
             android:background="@drawable/custom_background"
-            android:paddingLeft="15dp"
-            android:textColor="@color/fontAndImagesColorPadrao"
             android:ems="10"
             android:inputType="text"
+            android:paddingLeft="15dp"
+            android:textColor="@color/fontAndImagesColorPadrao"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="MissingConstraints" />
+            tools:ignore="MissingConstraints,SpeakableTextPresentCheck" />
 
         <ImageView
             android:id="@+id/imagemSend"
@@ -66,6 +67,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -86,16 +89,47 @@
             tools:layout_editor_absoluteY="46dp" />
 
     </LinearLayout>
-<!--    kk-->
+
     <LinearLayout
         android:id="@+id/menuDrawer"
         android:layout_width="120dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:orientation="vertical"
         android:background="@color/backgroundInputPadrao"
+        android:orientation="vertical"
         tools:ignore="MissingConstraints">
 
+        <ImageView
+            android:id="@+id/conversas"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            app:srcCompat="@drawable/logo" />
+
+        <ImageView
+            android:id="@+id/friends"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            app:srcCompat="@mipmap/ic_friends_round" />
+
+        <ImageView
+            android:id="@+id/search"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            app:srcCompat="@mipmap/search_round" />
+
+        <ImageView
+            android:id="@+id/settings"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            app:srcCompat="@mipmap/ic_settings_round" />
 
     </LinearLayout>
 

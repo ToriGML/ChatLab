@@ -10,4 +10,5 @@
     <color name="backgroundPadrao">#1D267D</color>
     <color name="backgroundInputPadrao">#0C134F</color>
     <color name="fontAndImagesColorPadrao">#D8D3E0</color>
+    <color name="buttonPadrao">#5C469C</color>
 </resources>
