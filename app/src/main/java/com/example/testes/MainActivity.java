@@ -1,5 +1,6 @@
 package com.example.testes;
 
+import android.content.Intent;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Color;
@@ -9,6 +10,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
@@ -24,6 +27,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import com.example.testes.login.LoginActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         drawerLayout = findViewById(R.id.drawerLayout);
+
+        Button button = findViewById(R.id.buttonTeste);
+        button.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
         settings = findViewById(R.id.settings);
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
