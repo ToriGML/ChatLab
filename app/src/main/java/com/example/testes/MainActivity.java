@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,12 @@ import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private float startY;
     private float initialY;
     private boolean isDragging = false;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +62,25 @@ public class MainActivity extends AppCompatActivity {
     private void showDialogSearch() {
         dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.bottom_sheet_layout_search);
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_layout_search, null);
+        RecyclerView recyclerView = dialogView.findViewById(R.id.searchFriends);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        String nomeContato;
+        List<Contact> listaContatos = new ArrayList<>();
+        for (int i = 1; i <= 50; i++) {
+            nomeContato = generateName();
+            if (i % 2 == 0) {
+                listaContatos.add(new Contact(nomeContato, R.drawable.ic_emoji));
+            } else {
+                listaContatos.add(new Contact(nomeContato, R.drawable.logo));
+            }
+        }
+        Adapter adapter = new Adapter(listaContatos);
+        recyclerView.setAdapter(adapter);
+
+        dialog.setContentView(dialogView);
         dialog.show();
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, 1600);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -198,5 +224,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void openSidebar(View view) {
         drawerLayout.openDrawer(GravityCompat.START);
+    }
+
+    public static String generateName() {
+        String[] firstNames = {"Alice", "Bob", "Claire", "David", "Emma", "Frank", "Grace", "Henry", "Isabella", "Jack",
+                "Kate", "Liam", "Mia", "Noah", "Olivia", "Paul", "Sophia", "Thomas", "Victoria", "William"};
+        String[] lastNames = {"Smith", "Johnson", "Williams", "Brown", "Jones", "Davis", "Miller", "Taylor", "Clark", "Wilson",
+                "Anderson", "Brown", "Campbell", "Clarkson", "Cox", "Edwards", "Garcia", "Green", "Hall", "Harris"};
+
+        Random random = new Random();
+        String firstName = firstNames[random.nextInt(firstNames.length)];
+        String lastName = lastNames[random.nextInt(lastNames.length)];
+
+        return firstName + " " + lastName;
     }
 }
