@@ -12,4 +12,5 @@
     <color name="fontAndImagesColorPadrao">#D8D3E0</color>
     <color name="lightPurplePadrao">#5C469C</color>
     <color name="linkTransparente">#00AFFF</color>
+    <color name="buttonPadrao">#5C469C</color>
 </resources>
