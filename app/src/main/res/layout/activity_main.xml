@@ -130,6 +130,14 @@
             android:layout_marginTop="20dp"
             app:srcCompat="@mipmap/ic_settings_round" />
 
+        <ImageView
+            android:id="@+id/profile"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="30dp"
+            android:background="@color/backgroundPadrao"
+            android:layout_marginTop="20dp"/>
+
     </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

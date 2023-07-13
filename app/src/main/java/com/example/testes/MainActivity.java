@@ -28,25 +28,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.example.testes.login.LoginActivity;
+import com.example.testes.perfil.PerfilActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView search;
-    ImageView settings;
+    private ImageView search;
+    private ImageView settings;
     private DrawerLayout drawerLayout;
     private Dialog dialog;
     private LinearLayout dialogRootLayout;
     private float startY;
     private float initialY;
     private boolean isDragging = false;
-    RecyclerView recyclerView;
+    private ImageView profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         drawerLayout = findViewById(R.id.drawerLayout);
+
+        profile = findViewById(R.id.profile);
+        profile.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, PerfilActivity.class);
+            startActivity(intent);
+        });
 
         settings = findViewById(R.id.settings);
         settings.setOnClickListener(new View.OnClickListener() {
