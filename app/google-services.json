@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1043262167527",
+    "project_id": "chatlab-a8b9f",
+    "storage_bucket": "chatlab-a8b9f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043262167527:android:5724b14afa4e69b19d8542",
+        "android_client_info": {
+          "package_name": "com.example.testes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1043262167527-egon8cirrf7l01cj81av42t149d66mbt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC86q5Dd0A2IoJ2rLPtJQvlEjFigOygJM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1043262167527-egon8cirrf7l01cj81av42t149d66mbt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
