@@ -1,5 +1,7 @@
 package com.example.testes;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -26,7 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.example.testes.login.LoginActivity;
 import com.example.testes.perfil.FriendsActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,12 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         search = findViewById(R.id.search);
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDialogSearch();
-            }
-        });
+        search.setOnClickListener(v -> showDialogSearch());
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -99,63 +99,59 @@ public class MainActivity extends AppCompatActivity {
 
         dialogRootLayout = dialog.findViewById(R.id.search_root_layout);
 
-        dialogRootLayout.setOnTouchListener(new View.OnTouchListener() {
+        dialogRootLayout.setOnTouchListener((v, event) -> {
+            int action = event.getAction();
+            float y = event.getRawY();
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int action = event.getAction();
-                float y = event.getRawY();
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    startY = y;
+                    initialY = dialogRootLayout.getY();
+                    isDragging = false;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    float deltaY = y - startY;
 
-                switch (action) {
-                    case MotionEvent.ACTION_DOWN:
-                        startY = y;
-                        initialY = dialogRootLayout.getY();
+                    if (Math.abs(deltaY) > 10) {
+                        isDragging = true;
+
+                        float newY = initialY + deltaY;
+                        if (newY >= 0 && newY <= dialogRootLayout.getHeight()) {
+                            dialogRootLayout.setY(newY);
+                        }
+                    }
+
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (isDragging) {
                         isDragging = false;
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        float deltaY = y - startY;
+                        float finalY = dialogRootLayout.getY();
+                        float threshold = dialogRootLayout.getHeight() / 6;
 
-                        if (Math.abs(deltaY) > 10) {
-                            isDragging = true;
-
-                            float newY = initialY + deltaY;
-                            if (newY >= 0 && newY <= dialogRootLayout.getHeight()) {
-                                dialogRootLayout.setY(newY);
-                            }
+                        if (finalY < threshold) {
+                            // Abre o bottom sheet completamente
+                            dialogRootLayout.setY(0);
+                        } else {
+                            // Fecha o bottom sheet
+                            dialogRootLayout.animate()
+                                    .translationY(dialogRootLayout.getHeight())
+                                    .setInterpolator(new AccelerateInterpolator())
+                                    .setDuration(300)
+                                    .withEndAction(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // Define o posicionamento correto do diálogo antes de descartá-lo
+                                            dialog.getWindow().setAttributes(dialog.getWindow().getAttributes());
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .start();
                         }
-
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (isDragging) {
-                            isDragging = false;
-                            float finalY = dialogRootLayout.getY();
-                            float threshold = dialogRootLayout.getHeight() / 6;
-
-                            if (finalY < threshold) {
-                                // Abre o bottom sheet completamente
-                                dialogRootLayout.setY(0);
-                            } else {
-                                // Fecha o bottom sheet
-                                dialogRootLayout.animate()
-                                        .translationY(dialogRootLayout.getHeight())
-                                        .setInterpolator(new AccelerateInterpolator())
-                                        .setDuration(300)
-                                        .withEndAction(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                // Define o posicionamento correto do diálogo antes de descartá-lo
-                                                dialog.getWindow().setAttributes(dialog.getWindow().getAttributes());
-                                                dialog.dismiss();
-                                            }
-                                        })
-                                        .start();
-                            }
-                        }
-                        break;
-                }
-
-                return true;
+                    }
+                    break;
             }
+
+            return true;
         });
     }
 
@@ -171,6 +167,19 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().setGravity(Gravity.BOTTOM);
 
         dialogRootLayout = dialog.findViewById(R.id.settings_root_layout);
+
+        Button exit = dialog.findViewById(R.id.exit);
+        exit.setOnClickListener(view -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Você deseja sair?");
+            builder.setPositiveButton("Sair", (dialog, id) -> {
+                FirebaseAuth.getInstance().signOut();
+                voltarLogin();
+            });
+            builder.setNegativeButton("Cancelar", (dialog, id) -> {});
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        });
 
         dialogRootLayout.setOnTouchListener(new View.OnTouchListener() {
 
@@ -247,5 +256,11 @@ public class MainActivity extends AppCompatActivity {
         String lastName = lastNames[random.nextInt(lastNames.length)];
 
         return firstName + " " + lastName;
+    }
+
+    public void voltarLogin() {
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

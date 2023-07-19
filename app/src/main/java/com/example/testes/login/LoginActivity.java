@@ -3,6 +3,7 @@ package com.example.testes.login;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.example.testes.R;
 import com.example.testes.cadastro.CadastroActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,7 +47,11 @@ public class LoginActivity extends AppCompatActivity {
 
         Button botaoEntrar = findViewById(R.id.botaoEntrar);
         botaoEntrar.setOnClickListener(view -> {
-            singin(email.getText().toString(), senha.getText().toString());
+            if (email.getText().toString().isEmpty() || senha.getText().toString().isEmpty()) {
+                showSnackbar(view, "Há dados não preenchidos");
+            } else {
+                singin(email.getText().toString(), senha.getText().toString());
+            }
         });
 
     }
@@ -62,10 +68,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void singout() {
-        FirebaseAuth.getInstance().signOut();
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -79,6 +81,12 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void showSnackbar(View view, String text) {
+        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
+        snackbar.setBackgroundTint(Color.RED);
+        snackbar.show();
     }
 
 }
