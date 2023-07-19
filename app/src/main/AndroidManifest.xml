@@ -34,7 +34,7 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".cadastro.CadastroActivity" />
-        <activity android:name=".perfil.PerfilActivity" />
+        <activity android:name=".perfil.FriendsActivity" />
     </application>
 
 </manifest>

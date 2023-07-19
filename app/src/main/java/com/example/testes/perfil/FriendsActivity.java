@@ -1,8 +1,12 @@
-package com.example.testes;
+package com.example.testes.perfil;
 
-import android.content.Intent;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -16,39 +20,34 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import com.example.testes.Adapter;
+import com.example.testes.Contact;
+import com.example.testes.MainActivity;
+import com.example.testes.R;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.example.testes.perfil.FriendsActivity;
-
-public class MainActivity extends AppCompatActivity {
+public class FriendsActivity extends AppCompatActivity {
 
     private ImageView search;
     private ImageView settings;
-    private DrawerLayout drawerLayout;
     private Dialog dialog;
-    private LinearLayout dialogRootLayout;
     private float startY;
     private float initialY;
     private boolean isDragging = false;
-    private ImageView friends;
+    private LinearLayout dialogRootLayout;
+    private ImageView chat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        drawerLayout = findViewById(R.id.drawerLayout);
+        setContentView(R.layout.activity_friends);
 
-        friends = findViewById(R.id.friends);
-        friends.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, FriendsActivity.class);
+        chat = findViewById(R.id.chat);
+        chat.setOnClickListener(view -> {
+            Intent intent = new Intent(FriendsActivity.this, MainActivity.class);
             startActivity(intent);
         });
 
@@ -66,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 showDialogSearch();
             }
         });
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -231,11 +231,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void openSidebar(View view) {
-        drawerLayout.openDrawer(GravityCompat.START);
-    }
-
     public static String generateName() {
         String[] firstNames = {"Alice", "Bob", "Claire", "David", "Emma", "Frank", "Grace", "Henry", "Isabella", "Jack",
                 "Kate", "Liam", "Mia", "Noah", "Olivia", "Paul", "Sophia", "Thomas", "Victoria", "William"};

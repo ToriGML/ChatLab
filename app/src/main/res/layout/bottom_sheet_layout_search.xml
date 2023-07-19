@@ -44,7 +44,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="390dp"
-            android:layout_height="627dp"
+            android:layout_height="600dp"
             android:layout_marginTop="32dp"
             android:id="@+id/searchFriends"
             app:layout_constraintEnd_toEndOf="parent"
