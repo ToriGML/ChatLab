@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         friends.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, FriendsActivity.class);
             startActivity(intent);
+            finish();
         });
 
         settings = findViewById(R.id.settings);

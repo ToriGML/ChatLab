@@ -49,6 +49,7 @@ public class FriendsActivity extends AppCompatActivity {
         chat.setOnClickListener(view -> {
             Intent intent = new Intent(FriendsActivity.this, MainActivity.class);
             startActivity(intent);
+            finish();
         });
 
         settings = findViewById(R.id.settings);
