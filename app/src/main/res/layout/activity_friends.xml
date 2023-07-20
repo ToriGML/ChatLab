@@ -139,9 +139,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/online_friends"
         android:layout_width="match_parent"
-        android:layout_height="235dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="260dp"
         app:layout_constraintBottom_toTopOf="@id/divider_offline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider_online">
 
@@ -151,6 +152,7 @@
         android:id="@+id/divider_offline"
         android:layout_width="match_parent"
         android:layout_height="5dp"
+        android:layout_marginTop="40dp"
         android:background="@color/backgroundInputPadrao"
         app:layout_constraintBottom_toTopOf="@id/offline_friends"
         app:layout_constraintEnd_toEndOf="parent"
@@ -161,13 +163,35 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/offline_friends"
         android:layout_width="match_parent"
-        android:layout_height="209dp"
+        android:layout_height="260dp"
         android:layout_marginTop="32dp"
         app:layout_constraintBottom_toTopOf="@+id/menu_navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/online_friends"
-        app:layout_constraintVertical_bias="0.141" />
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/online"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="Amigos online - 50+"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/divider_online"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/online2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="Amigos offline - 50+"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/divider_offline"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

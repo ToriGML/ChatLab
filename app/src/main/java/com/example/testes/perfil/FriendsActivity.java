@@ -65,6 +65,28 @@ public class FriendsActivity extends AppCompatActivity {
                 showDialogSearch();
             }
         });
+        copularAmigos();
+    }
+
+    private void copularAmigos() {
+        RecyclerView onlineFriends = findViewById(R.id.online_friends);
+        onlineFriends.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView offlineFriends = findViewById(R.id.offline_friends);
+        offlineFriends.setLayoutManager(new LinearLayoutManager(this));
+
+        String nomeContato;
+        List<Contact> listaContatos = new ArrayList<>();
+        for (int i = 1; i <= 50; i++) {
+            nomeContato = generateName();
+            if (i % 2 == 0) {
+                listaContatos.add(new Contact(nomeContato, R.drawable.ic_emoji));
+            } else {
+                listaContatos.add(new Contact(nomeContato, R.drawable.logo));
+            }
+        }
+        Adapter adapter = new Adapter(listaContatos);
+        onlineFriends.setAdapter(adapter);
+        offlineFriends.setAdapter(adapter);
 
     }
 
