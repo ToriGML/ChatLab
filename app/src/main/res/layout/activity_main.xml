@@ -98,46 +98,85 @@
         android:orientation="vertical"
         tools:ignore="MissingConstraints">
 
-        <ImageView
-            android:id="@+id/conversas"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="20dp"
+        <RelativeLayout
+            android:id="@+id/conversas_container"
+            android:layout_width="70dp"
+            android:background="@drawable/selected_background"
             android:layout_marginTop="20dp"
-            app:srcCompat="@drawable/logo" />
+            android:layout_marginLeft="10dp"
+            android:layout_height="60dp">
+            <ImageView
+                android:id="@+id/conversas"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                app:srcCompat="@drawable/logo" />
+        </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/friends"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="20dp"
+        <RelativeLayout
+            android:id="@+id/friends_container"
+            android:layout_width="70dp"
+            android:background="@drawable/selected_background"
             android:layout_marginTop="20dp"
-            app:srcCompat="@mipmap/ic_friends_round" />
+            android:layout_marginLeft="10dp"
+            android:layout_height="60dp">
+            <ImageView
+                android:id="@+id/friends"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                app:srcCompat="@mipmap/ic_friends_round" />
+        </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/search"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="20dp"
+        <RelativeLayout
+            android:id="@+id/search_container"
+            android:layout_width="70dp"
+            android:background="@drawable/selected_background"
             android:layout_marginTop="20dp"
-            app:srcCompat="@mipmap/search_round" />
+            android:layout_marginLeft="10dp"
+            android:layout_height="60dp">
+            <ImageView
+                android:id="@+id/search"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                app:srcCompat="@mipmap/search_round" />
+        </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/settings"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="20dp"
+        <RelativeLayout
+            android:id="@+id/settings_container"
+            android:layout_width="70dp"
+            android:background="@drawable/selected_background"
             android:layout_marginTop="20dp"
-            app:srcCompat="@mipmap/ic_settings_round" />
+            android:layout_marginLeft="10dp"
+            android:layout_height="60dp">
+            <ImageView
+                android:id="@+id/settings"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                app:srcCompat="@mipmap/ic_settings_round" />
+        </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/profile"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="20dp"
-            android:background="@color/backgroundPadrao"
-            android:layout_marginTop="20dp"/>
-
+        <RelativeLayout
+            android:id="@+id/profile_container"
+            android:layout_width="70dp"
+            android:background="@drawable/selected_background"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_height="60dp">
+            <ImageView
+                android:id="@+id/profile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:background="@color/backgroundPadrao"
+                android:layout_marginTop="10dp"/>
+        </RelativeLayout>
     </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

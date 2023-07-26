@@ -24,12 +24,13 @@ import com.example.testes.Adapter;
 import com.example.testes.Contact;
 import com.example.testes.MainActivity;
 import com.example.testes.R;
+import com.example.testes.friends.FriendsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class FriendsActivity extends AppCompatActivity {
+public class PerfilActivity extends AppCompatActivity {
 
     private ImageView search;
     private ImageView settings;
@@ -39,19 +40,25 @@ public class FriendsActivity extends AppCompatActivity {
     private boolean isDragging = false;
     private LinearLayout dialogRootLayout;
     private ImageView chat;
+    private ImageView friends;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_friends);
-
+        setContentView(R.layout.activity_perfil);
         chat = findViewById(R.id.chat);
         chat.setOnClickListener(view -> {
-            Intent intent = new Intent(FriendsActivity.this, MainActivity.class);
+            Intent intent = new Intent(PerfilActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         });
-
+        friends = findViewById(R.id.friends);
+        friends.setOnClickListener(view -> {
+            Intent intent = new Intent(PerfilActivity.this, FriendsActivity.class);
+            startActivity(intent);
+            finish();
+        });
         settings = findViewById(R.id.settings);
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,12 +75,9 @@ public class FriendsActivity extends AppCompatActivity {
         });
         copularAmigos();
     }
-
     private void copularAmigos() {
-        RecyclerView onlineFriends = findViewById(R.id.online_friends);
-        onlineFriends.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerView offlineFriends = findViewById(R.id.offline_friends);
-        offlineFriends.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView activity = findViewById(R.id.activity);
+        activity.setLayoutManager(new LinearLayoutManager(this));
 
         String nomeContato;
         List<Contact> listaContatos = new ArrayList<>();
@@ -86,8 +90,7 @@ public class FriendsActivity extends AppCompatActivity {
             }
         }
         Adapter adapter = new Adapter(listaContatos);
-        onlineFriends.setAdapter(adapter);
-        offlineFriends.setAdapter(adapter);
+        activity.setAdapter(adapter);
 
     }
 
@@ -122,63 +125,59 @@ public class FriendsActivity extends AppCompatActivity {
 
         dialogRootLayout = dialog.findViewById(R.id.search_root_layout);
 
-        dialogRootLayout.setOnTouchListener(new View.OnTouchListener() {
+        dialogRootLayout.setOnTouchListener((v, event) -> {
+            int action = event.getAction();
+            float y = event.getRawY();
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int action = event.getAction();
-                float y = event.getRawY();
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    startY = y;
+                    initialY = dialogRootLayout.getY();
+                    isDragging = false;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    float deltaY = y - startY;
 
-                switch (action) {
-                    case MotionEvent.ACTION_DOWN:
-                        startY = y;
-                        initialY = dialogRootLayout.getY();
+                    if (Math.abs(deltaY) > 10) {
+                        isDragging = true;
+
+                        float newY = initialY + deltaY;
+                        if (newY >= 0 && newY <= dialogRootLayout.getHeight()) {
+                            dialogRootLayout.setY(newY);
+                        }
+                    }
+
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (isDragging) {
                         isDragging = false;
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        float deltaY = y - startY;
+                        float finalY = dialogRootLayout.getY();
+                        float threshold = dialogRootLayout.getHeight() / 6;
 
-                        if (Math.abs(deltaY) > 10) {
-                            isDragging = true;
-
-                            float newY = initialY + deltaY;
-                            if (newY >= 0 && newY <= dialogRootLayout.getHeight()) {
-                                dialogRootLayout.setY(newY);
-                            }
+                        if (finalY < threshold) {
+                            // Abre o bottom sheet completamente
+                            dialogRootLayout.setY(0);
+                        } else {
+                            // Fecha o bottom sheet
+                            dialogRootLayout.animate()
+                                    .translationY(dialogRootLayout.getHeight())
+                                    .setInterpolator(new AccelerateInterpolator())
+                                    .setDuration(300)
+                                    .withEndAction(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // Define o posicionamento correto do diálogo antes de descartá-lo
+                                            dialog.getWindow().setAttributes(dialog.getWindow().getAttributes());
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .start();
                         }
-
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (isDragging) {
-                            isDragging = false;
-                            float finalY = dialogRootLayout.getY();
-                            float threshold = dialogRootLayout.getHeight() / 6;
-
-                            if (finalY < threshold) {
-                                // Abre o bottom sheet completamente
-                                dialogRootLayout.setY(0);
-                            } else {
-                                // Fecha o bottom sheet
-                                dialogRootLayout.animate()
-                                        .translationY(dialogRootLayout.getHeight())
-                                        .setInterpolator(new AccelerateInterpolator())
-                                        .setDuration(300)
-                                        .withEndAction(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                // Define o posicionamento correto do diálogo antes de descartá-lo
-                                                dialog.getWindow().setAttributes(dialog.getWindow().getAttributes());
-                                                dialog.dismiss();
-                                            }
-                                        })
-                                        .start();
-                            }
-                        }
-                        break;
-                }
-
-                return true;
+                    }
+                    break;
             }
+
+            return true;
         });
     }
 

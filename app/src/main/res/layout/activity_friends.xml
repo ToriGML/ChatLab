@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".perfil.FriendsActivity"
+    tools:context=".friends.FriendsActivity"
     android:background="@color/backgroundPadrao">
 
     <RelativeLayout
@@ -29,19 +29,21 @@
             app:srcCompat="@drawable/ic_settings_foreground"
             tools:ignore="NotSibling" />
 
-        <ImageView
-            android:id="@+id/search"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="100dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
-            android:layout_marginBottom="2dp"
-            app:layout_constraintBottom_toBottomOf="@id/menu_navbar"
-            app:srcCompat="@drawable/search_foreground"
-            tools:ignore="NotSibling" />
+
+            <ImageView
+                android:id="@+id/search"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="100dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                app:layout_constraintBottom_toBottomOf="@id/menu_navbar"
+                app:srcCompat="@drawable/search_foreground"
+                tools:ignore="NotSibling" />
+
 
         <ImageView
             android:id="@+id/chat"
@@ -57,19 +59,23 @@
             app:srcCompat="@drawable/logo"
             tools:ignore="NotSibling" />
 
+        <RelativeLayout
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="260dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/selected_bottom_menu_background">
         <ImageView
             android:id="@+id/friends"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="260dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
-            android:layout_marginBottom="2dp"
             app:layout_constraintBottom_toBottomOf="@id/menu_navbar"
             app:srcCompat="@drawable/ic_friends_foreground"
             tools:ignore="NotSibling" />
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/profile"
@@ -79,7 +85,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="2dp"
             android:layout_marginBottom="2dp"
-            android:background="@color/backgroundPadrao"
+            android:background="@drawable/perfil_background"
             app:layout_constraintBottom_toBottomOf="@id/menu_navbar"
             tools:ignore="NotSibling" />
 
