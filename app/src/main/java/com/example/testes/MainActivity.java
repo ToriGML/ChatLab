@@ -1,13 +1,14 @@
 package com.example.testes;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,8 +19,11 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+import com.bumptech.glide.Glide;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -45,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean isDragging = false;
     private ImageView friends;
 
+    private Uri imagemUri;
+    private ImageView iconeUsuario;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,14 +66,43 @@ public class MainActivity extends AppCompatActivity {
         });
 
         settings = findViewById(R.id.settings);
-        settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDialogSettings();
-            }
-        });
+        settings.setOnClickListener(v -> showDialogSettings());
         search = findViewById(R.id.search);
         search.setOnClickListener(v -> showDialogSearch());
+
+        showCustomDialog();
+    }
+
+    private void showCustomDialog() {
+        final Dialog dialog = new Dialog(MainActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.seletor_imagem_dialog);
+        CardView cardView = dialog.findViewById(R.id.cardView);
+        iconeUsuario = dialog.findViewById(R.id.icone);
+        cardView.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            startActivityForResult(intent.createChooser(intent, "Escolha sua imagem"), 0);
+        });
+        dialog.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 0) {
+                if (data != null) {
+                    imagemUri = data.getData();
+                    Glide.with(this)
+                            .load(imagemUri)
+                            .into(iconeUsuario);
+                    System.out.println("jklasjlfdsfjkld");
+                } else {
+                    Toast.makeText(getApplicationContext(), "Falha ao selecionar imagem", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")

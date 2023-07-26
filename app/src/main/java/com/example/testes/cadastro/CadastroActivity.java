@@ -64,7 +64,6 @@ public class CadastroActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, senha).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
                 Log.d(TAG, "signInWithCustomToken:success");
-                FirebaseUser user = mAuth.getCurrentUser();
                 finish();
             } else {
                 Toast.makeText(getApplicationContext(), "Falha ao fazer o cadastro", Toast.LENGTH_SHORT).show();
