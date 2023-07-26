@@ -1,14 +1,15 @@
-package com.example.testes;
+package com.example.testes.friends;
 
-import android.app.AlertDialog;
-import android.content.Intent;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -16,102 +17,85 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
-import com.bumptech.glide.Glide;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import com.example.testes.Adapter;
+import com.example.testes.Contact;
+import com.example.testes.MainActivity;
+import com.example.testes.R;
+import com.example.testes.perfil.PerfilActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.example.testes.login.LoginActivity;
-import com.example.testes.friends.FriendsActivity;
-import com.example.testes.perfil.PerfilActivity;
-import com.google.firebase.auth.FirebaseAuth;
-
-public class MainActivity extends AppCompatActivity {
+public class FriendsActivity extends AppCompatActivity {
 
     private ImageView search;
     private ImageView settings;
-    private DrawerLayout drawerLayout;
     private Dialog dialog;
-    private LinearLayout dialogRootLayout;
     private float startY;
     private float initialY;
     private boolean isDragging = false;
-    private ImageView friends;
+    private LinearLayout dialogRootLayout;
+    private ImageView chat;
     private ImageView profile;
-
-    private Uri imagemUri;
-    private ImageView iconeUsuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        drawerLayout = findViewById(R.id.drawerLayout);
+        setContentView(R.layout.activity_friends);
 
+        chat = findViewById(R.id.chat);
+        chat.setOnClickListener(view -> {
+            Intent intent = new Intent(FriendsActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        });
         profile = findViewById(R.id.profile);
         profile.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, PerfilActivity.class);
+            Intent intent = new Intent(FriendsActivity.this, PerfilActivity.class);
             startActivity(intent);
             finish();
         });
-
-        friends = findViewById(R.id.friends);
-        friends.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, FriendsActivity.class);
-            startActivity(intent);
-            finish();
-        });
-
         settings = findViewById(R.id.settings);
-        settings.setOnClickListener(v -> showDialogSettings());
-        search = findViewById(R.id.search);
-        search.setOnClickListener(v -> showDialogSearch());
-
-        showCustomDialog();
-    }
-
-    private void showCustomDialog() {
-        final Dialog dialog = new Dialog(MainActivity.this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(true);
-        dialog.setContentView(R.layout.seletor_imagem_dialog);
-        CardView cardView = dialog.findViewById(R.id.cardView);
-        iconeUsuario = dialog.findViewById(R.id.icone);
-        cardView.setOnClickListener(view -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-            startActivityForResult(intent.createChooser(intent, "Escolha sua imagem"), 0);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialogSettings();
+            }
         });
-        dialog.show();
+        search = findViewById(R.id.search);
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialogSearch();
+            }
+        });
+        copularAmigos();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == 0) {
-                if (data != null) {
-                    imagemUri = data.getData();
-                    Glide.with(this)
-                            .load(imagemUri)
-                            .into(iconeUsuario);
-                    System.out.println("jklasjlfdsfjkld");
-                } else {
-                    Toast.makeText(getApplicationContext(), "Falha ao selecionar imagem", Toast.LENGTH_SHORT).show();
-                }
+    private void copularAmigos() {
+        RecyclerView onlineFriends = findViewById(R.id.online_friends);
+        onlineFriends.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView offlineFriends = findViewById(R.id.offline_friends);
+        offlineFriends.setLayoutManager(new LinearLayoutManager(this));
+
+        String nomeContato;
+        List<Contact> listaContatos = new ArrayList<>();
+        for (int i = 1; i <= 50; i++) {
+            nomeContato = generateName();
+            if (i % 2 == 0) {
+                listaContatos.add(new Contact(nomeContato, R.drawable.ic_emoji));
+            } else {
+                listaContatos.add(new Contact(nomeContato, R.drawable.logo));
             }
         }
+        Adapter adapter = new Adapter(listaContatos);
+        onlineFriends.setAdapter(adapter);
+        offlineFriends.setAdapter(adapter);
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -144,88 +128,6 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().setGravity(Gravity.BOTTOM);
 
         dialogRootLayout = dialog.findViewById(R.id.search_root_layout);
-
-        dialogRootLayout.setOnTouchListener((v, event) -> {
-            int action = event.getAction();
-            float y = event.getRawY();
-
-            switch (action) {
-                case MotionEvent.ACTION_DOWN:
-                    startY = y;
-                    initialY = dialogRootLayout.getY();
-                    isDragging = false;
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    float deltaY = y - startY;
-
-                    if (Math.abs(deltaY) > 10) {
-                        isDragging = true;
-
-                        float newY = initialY + deltaY;
-                        if (newY >= 0 && newY <= dialogRootLayout.getHeight()) {
-                            dialogRootLayout.setY(newY);
-                        }
-                    }
-
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if (isDragging) {
-                        isDragging = false;
-                        float finalY = dialogRootLayout.getY();
-                        float threshold = dialogRootLayout.getHeight() / 6;
-
-                        if (finalY < threshold) {
-                            // Abre o bottom sheet completamente
-                            dialogRootLayout.setY(0);
-                        } else {
-                            // Fecha o bottom sheet
-                            dialogRootLayout.animate()
-                                    .translationY(dialogRootLayout.getHeight())
-                                    .setInterpolator(new AccelerateInterpolator())
-                                    .setDuration(300)
-                                    .withEndAction(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            // Define o posicionamento correto do diálogo antes de descartá-lo
-                                            dialog.getWindow().setAttributes(dialog.getWindow().getAttributes());
-                                            dialog.dismiss();
-                                        }
-                                    })
-                                    .start();
-                        }
-                    }
-                    break;
-            }
-
-            return true;
-        });
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void showDialogSettings() {
-        dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.bottom_sheet_layout_settings);
-        dialog.show();
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, 1600);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        dialog.getWindow().setGravity(Gravity.BOTTOM);
-
-        dialogRootLayout = dialog.findViewById(R.id.settings_root_layout);
-
-        Button exit = dialog.findViewById(R.id.exit);
-        exit.setOnClickListener(view -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Você deseja sair?");
-            builder.setPositiveButton("Sair", (dialog, id) -> {
-                FirebaseAuth.getInstance().signOut();
-                voltarLogin();
-            });
-            builder.setNegativeButton("Cancelar", (dialog, id) -> {});
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        });
 
         dialogRootLayout.setOnTouchListener(new View.OnTouchListener() {
 
@@ -287,10 +189,78 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void openSidebar(View view) {
-        drawerLayout.openDrawer(GravityCompat.START);
-    }
+    @SuppressLint("ClickableViewAccessibility")
+    private void showDialogSettings() {
+        dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.bottom_sheet_layout_settings);
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, 1600);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
 
+        dialogRootLayout = dialog.findViewById(R.id.settings_root_layout);
+
+        dialogRootLayout.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                float y = event.getRawY();
+
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        startY = y;
+                        initialY = dialogRootLayout.getY();
+                        isDragging = false;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        float deltaY = y - startY;
+
+                        if (Math.abs(deltaY) > 10) {
+                            isDragging = true;
+
+                            float newY = initialY + deltaY;
+                            if (newY >= 0 && newY <= dialogRootLayout.getHeight()) {
+                                dialogRootLayout.setY(newY);
+                            }
+                        }
+
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (isDragging) {
+                            isDragging = false;
+                            float finalY = dialogRootLayout.getY();
+                            float threshold = dialogRootLayout.getHeight() / 6;
+
+                            if (finalY < threshold) {
+                                // Abre o bottom sheet completamente
+                                dialogRootLayout.setY(0);
+                            } else {
+                                // Fecha o bottom sheet
+                                dialogRootLayout.animate()
+                                        .translationY(dialogRootLayout.getHeight())
+                                        .setInterpolator(new AccelerateInterpolator())
+                                        .setDuration(300)
+                                        .withEndAction(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                // Define o posicionamento correto do diálogo antes de descartá-lo
+                                                dialog.getWindow().setAttributes(dialog.getWindow().getAttributes());
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                        .start();
+                            }
+                        }
+                        break;
+                }
+
+                return true;
+            }
+        });
+    }
     public static String generateName() {
         String[] firstNames = {"Alice", "Bob", "Claire", "David", "Emma", "Frank", "Grace", "Henry", "Isabella", "Jack",
                 "Kate", "Liam", "Mia", "Noah", "Olivia", "Paul", "Sophia", "Thomas", "Victoria", "William"};
@@ -302,11 +272,5 @@ public class MainActivity extends AppCompatActivity {
         String lastName = lastNames[random.nextInt(lastNames.length)];
 
         return firstName + " " + lastName;
-    }
-
-    public void voltarLogin() {
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        startActivity(intent);
-        finish();
     }
 }
