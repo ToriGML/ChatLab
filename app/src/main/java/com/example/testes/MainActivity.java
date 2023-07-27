@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         mountainsRef = storage.getReference().child("imagens/" + currentUser.getEmail() + ".jpg");
         mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
     }
-
+// a
     private void showCustomDialog() {
         final Dialog dialog = new Dialog(MainActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
