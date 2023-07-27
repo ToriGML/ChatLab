@@ -1,10 +1,14 @@
 package com.example.testes;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,9 +23,11 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
-import com.bumptech.glide.Glide;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
@@ -29,6 +35,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,6 +43,10 @@ import java.util.Random;
 import com.example.testes.login.LoginActivity;
 import com.example.testes.perfil.FriendsActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,8 +60,10 @@ public class MainActivity extends AppCompatActivity {
     private boolean isDragging = false;
     private ImageView friends;
 
-    private Uri imagemUri;
     private ImageView iconeUsuario;
+    private Button enviarImagem;
+    FirebaseStorage storage;
+    StorageReference mountainsRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +83,11 @@ public class MainActivity extends AppCompatActivity {
         search = findViewById(R.id.search);
         search.setOnClickListener(v -> showDialogSearch());
 
-        showCustomDialog();
+        storage = FirebaseStorage.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        mountainsRef = storage.getReference().child("imagens/" + currentUser.getEmail() + ".jpg");
+        mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
     }
 
     private void showCustomDialog() {
@@ -80,30 +97,49 @@ public class MainActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.seletor_imagem_dialog);
         CardView cardView = dialog.findViewById(R.id.cardView);
         iconeUsuario = dialog.findViewById(R.id.icone);
+        enviarImagem = dialog.findViewById(R.id.enviarImagem);
         cardView.setOnClickListener(view -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-            startActivityForResult(intent.createChooser(intent, "Escolha sua imagem"), 0);
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            if (intent.resolveActivity(getApplicationContext().getPackageManager()) != null) {
+                galleryLauncher.launch(intent);
+            }
+        });
+        enviarImagem.setOnClickListener(view -> {
+            enviarImagemFireStorege(dialog);
         });
         dialog.show();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == 0) {
-                if (data != null) {
-                    imagemUri = data.getData();
-                    Glide.with(this)
-                            .load(imagemUri)
-                            .into(iconeUsuario);
-                    System.out.println("jklasjlfdsfjkld");
-                } else {
-                    Toast.makeText(getApplicationContext(), "Falha ao selecionar imagem", Toast.LENGTH_SHORT).show();
+    private void enviarImagemFireStorege(Dialog dialog) {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Enviando");
+        progressDialog.show();
+        iconeUsuario.setDrawingCacheEnabled(true);
+        iconeUsuario.buildDrawingCache();
+        Bitmap bitmap = ((BitmapDrawable) iconeUsuario.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = mountainsRef.putBytes(data);
+        uploadTask.addOnFailureListener(exception -> {
+            progressDialog.dismiss();
+            Toast.makeText(getApplicationContext(), "Falha ao enviar a imagem", Toast.LENGTH_SHORT).show();
+        }).addOnSuccessListener(taskSnapshot -> {
+            progressDialog.dismiss();
+            dialog.dismiss();
+        });
+    }
+
+    private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Uri selectedImageUri = result.getData().getData();
+                    iconeUsuario.setImageURI(selectedImageUri);
                 }
             }
-        }
-    }
+    );
 
     @SuppressLint("ClickableViewAccessibility")
     private void showDialogSearch() {
@@ -213,7 +249,8 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance().signOut();
                 voltarLogin();
             });
-            builder.setNegativeButton("Cancelar", (dialog, id) -> {});
+            builder.setNegativeButton("Cancelar", (dialog, id) -> {
+            });
             AlertDialog dialog = builder.create();
             dialog.show();
         });
