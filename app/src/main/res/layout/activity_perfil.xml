@@ -17,7 +17,7 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.193">
+        app:layout_constraintVertical_bias="0.124">
 
     </RelativeLayout>
 
@@ -114,8 +114,9 @@
         android:layout_height="391dp"
         app:layout_constraintBottom_toBottomOf="@+id/menu_navbar"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintVertical_bias="0.653"
-        tools:layout_editor_absoluteX="1dp" />
+        app:layout_constraintVertical_bias="0.748"
+        tools:layout_editor_absoluteX="2dp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/atividade"
@@ -131,5 +132,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
         app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/atividade2"
+        android:layout_width="161dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginBottom="21dp"
+        android:background="@drawable/perfil_background"
+        android:text=""
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/activity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
+        app:layout_constraintVertical_bias="0.275" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
