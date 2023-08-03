@@ -1,6 +1,6 @@
 package com.example.testes.groups;
 
-import com.example.testes.Messages;
+import com.example.testes.messages.Messages;
 
 import java.util.List;
 

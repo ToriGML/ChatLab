@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -15,15 +16,21 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -47,6 +54,8 @@ import com.example.testes.groups.AdapterGroups;
 import com.example.testes.groups.Groups;
 import com.example.testes.login.LoginActivity;
 import com.example.testes.friends.FriendsActivity;
+import com.example.testes.messages.AdapterMessages;
+import com.example.testes.messages.Messages;
 import com.example.testes.perfil.PerfilActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -62,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private Dialog dialog;
     private List<Groups> listaGrupos;
     private RecyclerView groups;
+    private Integer selectedGroup;
     private LinearLayout dialogRootLayout;
     private float startY;
     private float initialY;
@@ -70,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView profile;
     private ImageView iconeUsuario;
     private Button enviarImagem;
+    private ImageView sendIcon;
+    private EditText inputMessage;
     FirebaseStorage storage;
     StorageReference mountainsRef;
 
@@ -79,7 +91,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         drawerLayout = findViewById(R.id.drawerLayout);
 
+        inputMessage = findViewById(R.id.editTextTextPersonName);
+        
+///////////////Banco de dados/////////////////////////////////////////
+        List<Messages> messagesList = new ArrayList<>();
+        for (int j = 1; j <= 50; j++) {
+            messagesList.add(new Messages("cccccc - "+ j, null, "ccc - " + j));
+        }
+//////////////////////////////////////////////////////////////////////
+
         groups = findViewById(R.id.grupos);
+
+        trocarChat(messagesList);
 
         copularGrupos();
 
@@ -97,13 +120,27 @@ public class MainActivity extends AppCompatActivity {
                 if (result) {
                     int position = rv.getChildAdapterPosition(rv.findChildViewUnder(e.getX(), e.getY()));
                     if (position != RecyclerView.NO_POSITION) {
+                        selectedGroup = position;
                         System.out.println("Clicou no item: " + position);
                         AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
-                        System.out.println(adapterGroups.getItem(position).getMessagesList().toString());
+                        //Group grupo = adapterGroups.getItem(position)
+                        //List<Messages> messagesList = chamando o banco com o id do grupo: grupo.getId()
+                        List<Messages> messagesList = adapterGroups.getItem(position).getMessagesList();
+                        trocarChat(messagesList);
                     }
                 }
                 return result;
             }
+        });
+
+        sendIcon = findViewById(R.id.imagemSend);
+        sendIcon.setOnClickListener(view -> {
+            AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
+            List<Messages> groupMessages = adapterGroups.getItem(selectedGroup).getMessagesList();
+            groupMessages.add(new Messages(inputMessage.getText().toString(), null, "eu mesmo"));
+            inputMessage.setText("");
+            trocarChat(groupMessages);
+            System.out.println("Nova mensagem no grupo: " + selectedGroup);
         });
 
         profile = findViewById(R.id.profile);
@@ -132,8 +169,12 @@ public class MainActivity extends AppCompatActivity {
         mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
     }
 
-    private void trocarChat() {
-
+    private void trocarChat(List<Messages> messagesList) {
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) RecyclerView messages = findViewById(R.id.mensagens);
+        messages.setLayoutManager(new LinearLayoutManager(this));
+        AdapterMessages adapterMessages = new AdapterMessages(messagesList);
+        messages.setAdapter(adapterMessages);
+        drawerLayout.closeDrawer(GravityCompat.START);
     }
 
     // a
@@ -188,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
             }
     );
 
+///////////////Banco de dados/////////////////////////////////////////
     private void copularGrupos(){
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) RecyclerView groups = findViewById(R.id.grupos);
         groups.setLayoutManager(new LinearLayoutManager(this));
@@ -195,18 +237,22 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 1; i <= 50; i++) {
             if (i % 2 == 0) {
                 List<Messages> messagesList = new ArrayList<>();
-                messagesList.add(new Messages("aaaa", null, "aaa"));
-                System.out.println(messagesList.toString());
+                for (int j = 1; j <= 3; j++) {
+                    messagesList.add(new Messages("aaaaaa - "+ j, null, "aaa - " + j));
+                }
                 listaGrupos.add(new Groups(R.drawable.ic_emoji, messagesList));
             } else {
                 List<Messages> messagesList = new ArrayList<>();
-                messagesList.add(new Messages("bbbbb", null, "bbbbb"));
+                for (int j = 1; j <= 3; j++) {
+                    messagesList.add(new Messages("bbbbbb - "+ j, null, "bbb - " + j));
+                }
                 listaGrupos.add(new Groups(R.drawable.logo, messagesList));
             }
         }
         AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
         groups.setAdapter(adapterGroups);
     }
+///////////////////////////////////////////////////////////////////////
 
     @SuppressLint("ClickableViewAccessibility")
     private void showDialogSearch() {
@@ -216,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_layout_search, null);
         RecyclerView searchFriends = dialogView.findViewById(R.id.searchFriends);
         searchFriends.setLayoutManager(new LinearLayoutManager(this));
-
+///////////////Banco de dados/////////////////////////////////////////
         String nomeContato;
         List<Contact> listaContatos = new ArrayList<>();
         for (int i = 1; i <= 50; i++) {
@@ -227,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
                 listaContatos.add(new Contact(nomeContato, R.drawable.logo));
             }
         }
+///////////////////////////////////////////////////////////////////////
         Adapter adapter = new Adapter(listaContatos);
         searchFriends.setAdapter(adapter);
 
@@ -384,8 +431,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void openSidebar(View view) {
         drawerLayout.openDrawer(GravityCompat.START);
-    }
 
+    }
+///////////////Banco de dados/////////////////////////////////////////
     public static String generateName() {
         String[] firstNames = {"Alice", "Bob", "Claire", "David", "Emma", "Frank", "Grace", "Henry", "Isabella", "Jack",
                 "Kate", "Liam", "Mia", "Noah", "Olivia", "Paul", "Sophia", "Thomas", "Victoria", "William"};
@@ -398,6 +446,7 @@ public class MainActivity extends AppCompatActivity {
 
         return firstName + " " + lastName;
     }
+///////////////////////////////////////////////////////////////////////
 
     public void voltarLogin() {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
