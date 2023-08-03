@@ -20,8 +20,8 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.example.testes.Adapter;
-import com.example.testes.Contact;
+import com.example.testes.contact.Adapter;
+import com.example.testes.contact.Contact;
 import com.example.testes.MainActivity;
 import com.example.testes.R;
 import com.example.testes.perfil.PerfilActivity;

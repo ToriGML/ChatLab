@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,11 +24,11 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
@@ -40,6 +41,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.example.testes.contact.Adapter;
+import com.example.testes.contact.Contact;
+import com.example.testes.groups.AdapterGroups;
+import com.example.testes.groups.Groups;
 import com.example.testes.login.LoginActivity;
 import com.example.testes.friends.FriendsActivity;
 import com.example.testes.perfil.PerfilActivity;
@@ -55,13 +60,14 @@ public class MainActivity extends AppCompatActivity {
     private ImageView settings;
     private DrawerLayout drawerLayout;
     private Dialog dialog;
+    private List<Groups> listaGrupos;
+    private RecyclerView groups;
     private LinearLayout dialogRootLayout;
     private float startY;
     private float initialY;
     private boolean isDragging = false;
     private ImageView friends;
     private ImageView profile;
-
     private ImageView iconeUsuario;
     private Button enviarImagem;
     FirebaseStorage storage;
@@ -72,6 +78,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         drawerLayout = findViewById(R.id.drawerLayout);
+
+        groups = findViewById(R.id.grupos);
+
+        copularGrupos();
+
+        groups.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
+            private GestureDetector gestureDetector = new GestureDetector(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+            });
+
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                boolean result = gestureDetector.onTouchEvent(e);
+                if (result) {
+                    int position = rv.getChildAdapterPosition(rv.findChildViewUnder(e.getX(), e.getY()));
+                    if (position != RecyclerView.NO_POSITION) {
+                        System.out.println("Clicou no item: " + position);
+                        AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
+                        System.out.println(adapterGroups.getItem(position).getMessagesList().toString());
+                    }
+                }
+                return result;
+            }
+        });
 
         profile = findViewById(R.id.profile);
         profile.setOnClickListener(view -> {
@@ -98,7 +131,12 @@ public class MainActivity extends AppCompatActivity {
         mountainsRef = storage.getReference().child("imagens/" + currentUser.getEmail() + ".jpg");
         mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
     }
-// a
+
+    private void trocarChat() {
+
+    }
+
+    // a
     private void showCustomDialog() {
         final Dialog dialog = new Dialog(MainActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -150,14 +188,34 @@ public class MainActivity extends AppCompatActivity {
             }
     );
 
+    private void copularGrupos(){
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) RecyclerView groups = findViewById(R.id.grupos);
+        groups.setLayoutManager(new LinearLayoutManager(this));
+        listaGrupos = new ArrayList<>();
+        for (int i = 1; i <= 50; i++) {
+            if (i % 2 == 0) {
+                List<Messages> messagesList = new ArrayList<>();
+                messagesList.add(new Messages("aaaa", null, "aaa"));
+                System.out.println(messagesList.toString());
+                listaGrupos.add(new Groups(R.drawable.ic_emoji, messagesList));
+            } else {
+                List<Messages> messagesList = new ArrayList<>();
+                messagesList.add(new Messages("bbbbb", null, "bbbbb"));
+                listaGrupos.add(new Groups(R.drawable.logo, messagesList));
+            }
+        }
+        AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
+        groups.setAdapter(adapterGroups);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private void showDialogSearch() {
         dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         View dialogView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_layout_search, null);
-        RecyclerView recyclerView = dialogView.findViewById(R.id.searchFriends);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView searchFriends = dialogView.findViewById(R.id.searchFriends);
+        searchFriends.setLayoutManager(new LinearLayoutManager(this));
 
         String nomeContato;
         List<Contact> listaContatos = new ArrayList<>();
@@ -170,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         Adapter adapter = new Adapter(listaContatos);
-        recyclerView.setAdapter(adapter);
+        searchFriends.setAdapter(adapter);
 
         dialog.setContentView(dialogView);
         dialog.show();

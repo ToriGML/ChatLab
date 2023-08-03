@@ -1,4 +1,4 @@
-package com.example.testes;
+package com.example.testes.contact;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.testes.R;
 
 import java.util.List;
 
