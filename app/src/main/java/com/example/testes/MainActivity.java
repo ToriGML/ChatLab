@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawerLayout);
 
         inputMessage = findViewById(R.id.editTextTextPersonName);
-        
+
 ///////////////Banco de dados/////////////////////////////////////////
         List<Messages> messagesList = new ArrayList<>();
         for (int j = 1; j <= 50; j++) {
@@ -437,8 +437,8 @@ public class MainActivity extends AppCompatActivity {
     public static String generateName() {
         String[] firstNames = {"Alice", "Bob", "Claire", "David", "Emma", "Frank", "Grace", "Henry", "Isabella", "Jack",
                 "Kate", "Liam", "Mia", "Noah", "Olivia", "Paul", "Sophia", "Thomas", "Victoria", "William"};
-        String[] lastNames = {"Smith", "Johnson", "Williams", "Brown", "Jones", "Davis", "Miller", "Taylor", "Clark", "Wilson",
-                "Anderson", "Brown", "Campbell", "Clarkson", "Cox", "Edwards", "Garcia", "Green", "Hall", "Harris"};
+        String[] lastNames = {"Smith", "Johnson", "Williams", "Brown", "Malkova", "Davis", "Miller", "Taylor", "Clark", "Wilson",
+                "Anderson", "Brown", "Campbell", "Clarkson", "Cox", "Edwards", "Garcia", "Green", "Hall", "Jones"};
 
         Random random = new Random();
         String firstName = firstNames[random.nextInt(firstNames.length)];
