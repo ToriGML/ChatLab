@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.testes.R;
 import com.example.testes.groups.Groups;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class HolderMessages extends RecyclerView.ViewHolder{
 
     private TextView messageDate;
@@ -26,7 +29,18 @@ public class HolderMessages extends RecyclerView.ViewHolder{
 
     public void bind(Messages mensagens) {
         messageText.setText(mensagens.getText());
-        messageDate.setText((CharSequence) mensagens.getTime());
+        Date time = mensagens.getTime();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        if(minute < 10){
+            messageDate.setText(hour + ":0" + minute);
+        }else{
+            messageDate.setText(hour + ":" + minute);
+        }
+
         nameContato.setText(mensagens.getUser_nickname());
     }
 

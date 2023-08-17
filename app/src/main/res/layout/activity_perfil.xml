@@ -113,9 +113,11 @@
         android:layout_width="406dp"
         android:layout_height="391dp"
         app:layout_constraintBottom_toBottomOf="@+id/menu_navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintVertical_bias="0.748"
-        tools:layout_editor_absoluteX="2dp"
+        app:layout_constraintVertical_bias="0.704"
         tools:ignore="MissingConstraints" />
 
     <TextView

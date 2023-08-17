@@ -13,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -44,7 +45,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -96,7 +101,10 @@ public class MainActivity extends AppCompatActivity {
 ///////////////Banco de dados/////////////////////////////////////////
         List<Messages> messagesList = new ArrayList<>();
         for (int j = 1; j <= 50; j++) {
-            messagesList.add(new Messages("cccccc - "+ j, null, "ccc - " + j));
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
+            System.out.println("Hora atual (Date): " + date);
+            messagesList.add(new Messages("cccccc - "+ j, date, "ccc - " + j));
         }
 //////////////////////////////////////////////////////////////////////
 
@@ -135,9 +143,14 @@ public class MainActivity extends AppCompatActivity {
 
         sendIcon = findViewById(R.id.imagemSend);
         sendIcon.setOnClickListener(view -> {
+            LocalDateTime currentDateTime = LocalDateTime.now();
+
+            Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
             AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
+            System.out.println(selectedGroup);
             List<Messages> groupMessages = adapterGroups.getItem(selectedGroup).getMessagesList();
-            groupMessages.add(new Messages(inputMessage.getText().toString(), null, "eu mesmo"));
+
+            groupMessages.add(new Messages(inputMessage.getText().toString(), date, "eu mesmo"));
             inputMessage.setText("");
             trocarChat(groupMessages);
             System.out.println("Nova mensagem no grupo: " + selectedGroup);
@@ -234,17 +247,19 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) RecyclerView groups = findViewById(R.id.grupos);
         groups.setLayoutManager(new LinearLayoutManager(this));
         listaGrupos = new ArrayList<>();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
         for (int i = 1; i <= 50; i++) {
             if (i % 2 == 0) {
                 List<Messages> messagesList = new ArrayList<>();
                 for (int j = 1; j <= 3; j++) {
-                    messagesList.add(new Messages("aaaaaa - "+ j, null, "aaa - " + j));
+                    messagesList.add(new Messages("aaaaaa - "+ j, date, "aaa - " + j));
                 }
                 listaGrupos.add(new Groups(R.drawable.ic_emoji, messagesList));
             } else {
                 List<Messages> messagesList = new ArrayList<>();
                 for (int j = 1; j <= 3; j++) {
-                    messagesList.add(new Messages("bbbbbb - "+ j, null, "bbb - " + j));
+                    messagesList.add(new Messages("bbbbbb - "+ j, date, "bbb - " + j));
                 }
                 listaGrupos.add(new Groups(R.drawable.logo, messagesList));
             }

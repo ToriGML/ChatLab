@@ -42,6 +42,7 @@
             android:ems="10"
             android:inputType="text"
             android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:textColor="@color/fontAndImagesColorPadrao"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
