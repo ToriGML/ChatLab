@@ -72,6 +72,7 @@ id icone
 id imageView
 id imagemEmoji
 id imagemMenu
+id imagemMenuMenu
 id imagemSend
 id imagem_contato
 id inputSearch
@@ -79,6 +80,9 @@ id language
 id mensagens
 id menuDrawer
 id menu_navbar
+id message
+id messageDate
+id messageText
 id nameContato
 id notifications
 id offline_friends
@@ -114,6 +118,8 @@ layout activity_perfil
 layout bottom_sheet_layout_search
 layout bottom_sheet_layout_settings
 layout contacts
+layout groups
+layout messages
 layout seletor_imagem_dialog
 mipmap ic_friends
 mipmap ic_friends_round

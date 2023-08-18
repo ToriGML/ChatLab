@@ -25,10 +25,12 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mensagens"
-            android:layout_width="409dp"
-            android:layout_height="608dp"
-            tools:layout_editor_absoluteX="1dp"
-            tools:layout_editor_absoluteY="46dp"
+            android:layout_width="415dp"
+            android:layout_height="727dp"
+            android:layout_marginTop="44dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingConstraints" />
 
         <EditText
@@ -40,6 +42,7 @@
             android:ems="10"
             android:inputType="text"
             android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:textColor="@color/fontAndImagesColorPadrao"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -78,6 +81,19 @@
         android:orientation="vertical"
         android:background="@color/backgroundInputPadrao"
         tools:ignore="MissingConstraints">
+
+        <ImageView
+            android:id="@+id/imagemMenuMenu"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="38dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:onClick="openSidebar"
+            android:src="@drawable/ic_menu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/grupos"

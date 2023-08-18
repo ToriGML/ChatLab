@@ -68,6 +68,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -234,6 +235,19 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         ref.getDownloadUrl().addOnSuccessListener(uri -> {
                             Toast.makeText(MainActivity.this, "Imagem enviada com sucesso", Toast.LENGTH_SHORT).show();
+                            FirebaseFirestore.getInstance().collection("/usuarios")
+                                            .addSnapshotListener((value, error) -> {
+                                                if (error != null) {
+                                                    return;
+                                                }
+                                                for (int i = 0; i < value.getDocuments().size(); i++) {
+                                                    if (value.getDocuments().get(i).get("id").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                                        FirebaseFirestore.getInstance().collection("/usuarios")
+                                                                .document(value.getDocuments().get(i).getId())
+                                                                .update("imagemUrl", uri.toString());
+                                                    }
+                                                }
+                                            });
                             dialog.dismiss();
                             progressDialog.dismiss();
                         });
