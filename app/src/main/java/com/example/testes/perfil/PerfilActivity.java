@@ -20,11 +20,14 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.testes.contact.Adapter;
 import com.example.testes.contact.Contact;
 import com.example.testes.MainActivity;
 import com.example.testes.R;
 import com.example.testes.friends.FriendsActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +44,18 @@ public class PerfilActivity extends AppCompatActivity {
     private LinearLayout dialogRootLayout;
     private ImageView chat;
     private ImageView friends;
+    private ImageView perfilPhoto;
+    private ImageView profile;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
+
+        perfilPhoto = findViewById(R.id.perfilPhoto);
+        profile = findViewById(R.id.profile);
+
         chat = findViewById(R.id.chat);
         chat.setOnClickListener(view -> {
             Intent intent = new Intent(PerfilActivity.this, MainActivity.class);
@@ -73,6 +82,25 @@ public class PerfilActivity extends AppCompatActivity {
                 showDialogSearch();
             }
         });
+
+        FirebaseFirestore.getInstance().collection("/usuarios")
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        return;
+                    }
+                    for (int i = 0; i < value.getDocuments().size(); i++) {
+                        if (value.getDocuments().get(i).get("id").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            System.out.println(value.getDocuments().get(i).get("imagemUrl"));
+                            Glide.with(this)
+                                    .load(value.getDocuments().get(i).get("imagemUrl"))  // Use Glide ou outra biblioteca de carregamento de imagens
+                                    .into(perfilPhoto);
+                            Glide.with(this)
+                                    .load(value.getDocuments().get(i).get("imagemUrl"))  // Use Glide ou outra biblioteca de carregamento de imagens
+                                    .into(profile);
+                        }
+                    }
+                });
+
         copularAmigos();
     }
     private void copularAmigos() {

@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import com.bumptech.glide.Glide;
 import com.example.testes.contact.Adapter;
 import com.example.testes.contact.Contact;
 import com.example.testes.groups.AdapterGroups;
@@ -87,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
     private float initialY;
     private boolean isDragging = false;
     private ImageView friends;
-    private ImageView profile;
     private ImageView iconeUsuario;
     private Button enviarImagem;
     private ImageView sendIcon;
@@ -95,13 +95,15 @@ public class MainActivity extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference mountainsRef;
     private Uri selectedImageUri;
+    FirebaseUser currentLoggedUser;
+    private ImageView profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         drawerLayout = findViewById(R.id.drawerLayout);
-
+        profile = findViewById(R.id.profile);
         inputMessage = findViewById(R.id.editTextTextPersonName);
 
 ///////////////Banco de dados/////////////////////////////////////////
@@ -110,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             LocalDateTime currentDateTime = LocalDateTime.now();
             Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
             System.out.println("Hora atual (Date): " + date);
-            messagesList.add(new Messages("cccccc - "+ j, date, "ccc - " + j));
+            messagesList.add(new Messages("cccccc - "+ j, date, "ccc - " + j, null));
         }
 //////////////////////////////////////////////////////////////////////
 
@@ -147,6 +149,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        FirebaseFirestore.getInstance().collection("/usuarios")
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        return;
+                    }
+                    for (int i = 0; i < value.getDocuments().size(); i++) {
+                        if (value.getDocuments().get(i).get("id").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            System.out.println(value.getDocuments().get(i).get("imagemUrl"));
+                            Glide.with(this)
+                                    .load(value.getDocuments().get(i).get("imagemUrl"))  // Use Glide ou outra biblioteca de carregamento de imagens
+                                    .into(profile);
+                        }
+                    }
+                });
+
         sendIcon = findViewById(R.id.imagemSend);
         sendIcon.setOnClickListener(view -> {
             LocalDateTime currentDateTime = LocalDateTime.now();
@@ -156,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(selectedGroup);
             List<Messages> groupMessages = adapterGroups.getItem(selectedGroup).getMessagesList();
 
-            groupMessages.add(new Messages(inputMessage.getText().toString(), date, "eu mesmo"));
+            groupMessages.add(new Messages(inputMessage.getText().toString(), date, currentLoggedUser.getEmail(), currentLoggedUser));
             inputMessage.setText("");
             trocarChat(groupMessages);
             System.out.println("Nova mensagem no grupo: " + selectedGroup);
@@ -184,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentLoggedUser = mAuth.getCurrentUser();
         mountainsRef = storage.getReference().child("/images/" + currentUser.getUid());
         mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
     }
@@ -278,13 +296,13 @@ public class MainActivity extends AppCompatActivity {
             if (i % 2 == 0) {
                 List<Messages> messagesList = new ArrayList<>();
                 for (int j = 1; j <= 3; j++) {
-                    messagesList.add(new Messages("aaaaaa - "+ j, date, "aaa - " + j));
+                    messagesList.add(new Messages("aaaaaa - "+ j, date, "aaa - " + j, currentLoggedUser));
                 }
                 listaGrupos.add(new Groups(R.drawable.ic_emoji, messagesList));
             } else {
                 List<Messages> messagesList = new ArrayList<>();
                 for (int j = 1; j <= 3; j++) {
-                    messagesList.add(new Messages("bbbbbb - "+ j, date, "bbb - " + j));
+                    messagesList.add(new Messages("bbbbbb - "+ j, date, "bbb - " + j, currentLoggedUser));
                 }
                 listaGrupos.add(new Groups(R.drawable.logo, messagesList));
             }

@@ -1,16 +1,20 @@
 package com.example.testes.messages;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.Date;
 
 public class Messages {
     private String text;
     private Date time;
     private String user_nickname;
+    private FirebaseUser user;
 
-    public Messages(String text, Date time, String user_nickname) {
+    public Messages(String text, Date time, String user_nickname, FirebaseUser user) {
         this.text = text;
         this.time = time;
         this.user_nickname = user_nickname;
+        this.user = user;
     }
 
     public String getText() {
