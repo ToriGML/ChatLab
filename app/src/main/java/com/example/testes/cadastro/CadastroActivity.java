@@ -12,11 +12,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.testes.R;
+import com.example.testes.usuario.Usuario;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 
 public class CadastroActivity extends AppCompatActivity {
 
@@ -64,6 +67,14 @@ public class CadastroActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, senha).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
                 Log.d(TAG, "signInWithCustomToken:success");
+                Usuario usuario = new Usuario(mAuth.getUid(), email);
+                FirebaseFirestore.getInstance().collection("usuarios")
+                        .add(usuario)
+                        .addOnSuccessListener(documentReference -> {
+                            Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                        }).addOnFailureListener(e -> {
+                            Log.w(TAG, "Error adding document", e);
+                        });
                 finish();
             } else {
                 Toast.makeText(getApplicationContext(), "Falha ao fazer o cadastro", Toast.LENGTH_SHORT).show();
