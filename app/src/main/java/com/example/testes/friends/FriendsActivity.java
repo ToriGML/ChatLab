@@ -20,8 +20,8 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.example.testes.Adapter;
-import com.example.testes.Contact;
+import com.example.testes.contact.Adapter;
+import com.example.testes.contact.Contact;
 import com.example.testes.MainActivity;
 import com.example.testes.R;
 import com.example.testes.perfil.PerfilActivity;
@@ -262,9 +262,9 @@ public class FriendsActivity extends AppCompatActivity {
         });
     }
     public static String generateName() {
-        String[] firstNames = {"Alice", "Bob", "Claire", "David", "Emma", "Frank", "Grace", "Henry", "Isabella", "Jack",
-                "Kate", "Liam", "Mia", "Noah", "Olivia", "Paul", "Sophia", "Thomas", "Victoria", "William"};
-        String[] lastNames = {"Smith", "Johnson", "Williams", "Brown", "Jones", "Davis", "Miller", "Taylor", "Clark", "Wilson",
+        String[] firstNames = {"Mia","Alice", "Bob", "Claire", "David", "Emma", "Frank", "Grace", "Henry", "Isabella", "Jack",
+                "Kate", "Liam" , "Noah", "Olivia", "Paul", "Sophia", "Thomas", "Victoria", "William"};
+        String[] lastNames = {"Malkova","Smith", "Johnson", "Williams", "Brown" , "Davis", "Miller", "Taylor", "Clark", "Wilson",
                 "Anderson", "Brown", "Campbell", "Clarkson", "Cox", "Edwards", "Garcia", "Green", "Hall", "Harris"};
 
         Random random = new Random();
