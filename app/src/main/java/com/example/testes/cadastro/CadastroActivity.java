@@ -69,9 +69,10 @@ public class CadastroActivity extends AppCompatActivity {
                 Log.d(TAG, "signInWithCustomToken:success");
                 Usuario usuario = new Usuario(mAuth.getUid(), email);
                 FirebaseFirestore.getInstance().collection("usuarios")
-                        .add(usuario)
+                        .document(usuario.getId())
+                        .set(usuario)
                         .addOnSuccessListener(documentReference -> {
-                            Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                            Log.d(TAG, "DocumentSnapshot added with ID: " + usuario.getId());
                         }).addOnFailureListener(e -> {
                             Log.w(TAG, "Error adding document", e);
                         });
