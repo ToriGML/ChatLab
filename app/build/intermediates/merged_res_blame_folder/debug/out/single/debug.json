@@ -36,6 +36,10 @@
         "source": "com.example.testes.app-debug-32:/mipmap-xxhdpi/logo_round.png"
     },
     {
+        "merged": "com.example.testes.app-merged_res-31:/layout_groups.xml.flat",
+        "source": "com.example.testes.app-main-33:/layout/groups.xml"
+    },
+    {
         "merged": "com.example.testes.app-merged_res-31:/layout_bottom_sheet_layout_settings.xml.flat",
         "source": "com.example.testes.app-main-33:/layout/bottom_sheet_layout_settings.xml"
     },
@@ -370,6 +374,10 @@
     {
         "merged": "com.example.testes.app-merged_res-31:/mipmap-hdpi_ic_logo_background.png.flat",
         "source": "com.example.testes.app-debug-32:/mipmap-hdpi/ic_logo_background.png"
+    },
+    {
+        "merged": "com.example.testes.app-merged_res-31:/layout_messages.xml.flat",
+        "source": "com.example.testes.app-main-33:/layout/messages.xml"
     },
     {
         "merged": "com.example.testes.app-merged_res-31:/mipmap-hdpi_ic_friends.png.flat",

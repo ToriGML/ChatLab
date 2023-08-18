@@ -2837,6 +2837,7 @@ id image
 id imageView
 id imagemEmoji
 id imagemMenu
+id imagemMenuMenu
 id imagemSend
 id imagem_contato
 id immediateStop
@@ -2891,6 +2892,8 @@ id mensagens
 id menuDrawer
 id menu_navbar
 id message
+id messageDate
+id messageText
 id middle
 id mini
 id month_grid
@@ -3247,6 +3250,7 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
+layout groups
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title
@@ -3264,6 +3268,7 @@ layout material_time_input
 layout material_timepicker
 layout material_timepicker_dialog
 layout material_timepicker_textinput_display
+layout messages
 layout mtrl_alert_dialog
 layout mtrl_alert_dialog_actions
 layout mtrl_alert_dialog_title

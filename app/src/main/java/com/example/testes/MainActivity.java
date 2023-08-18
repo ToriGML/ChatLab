@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference mountainsRef;
     private Uri selectedImageUri;
+    FirebaseUser currentLoggedUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             LocalDateTime currentDateTime = LocalDateTime.now();
             Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
             System.out.println("Hora atual (Date): " + date);
-            messagesList.add(new Messages("cccccc - "+ j, date, "ccc - " + j));
+            messagesList.add(new Messages("cccccc - "+ j, date, "cccc", null));
         }
 //////////////////////////////////////////////////////////////////////
 
@@ -134,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     int position = rv.getChildAdapterPosition(rv.findChildViewUnder(e.getX(), e.getY()));
                     if (position != RecyclerView.NO_POSITION) {
                         selectedGroup = position;
-                        System.out.println("Clicou no item: " + position);
+                        System.out.println("Clicou no item: " + position + ", com o usuário: "+ currentLoggedUser.getUid());
                         AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
                         //Group grupo = adapterGroups.getItem(position)
                         //List<Messages> messagesList = chamando o banco com o id do grupo: grupo.getId()
@@ -155,10 +156,10 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(selectedGroup);
             List<Messages> groupMessages = adapterGroups.getItem(selectedGroup).getMessagesList();
 
-            groupMessages.add(new Messages(inputMessage.getText().toString(), date, "eu mesmo"));
+            groupMessages.add(new Messages(inputMessage.getText().toString(), date, currentLoggedUser.getEmail(), currentLoggedUser));
             inputMessage.setText("");
             trocarChat(groupMessages);
-            System.out.println("Nova mensagem no grupo: " + selectedGroup);
+            System.out.println("Nova mensagem no grupo: " + selectedGroup + ", mensagem do usuário dono do uid: " + currentLoggedUser.getUid());
         });
 
         profile = findViewById(R.id.profile);
@@ -183,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentLoggedUser = mAuth.getCurrentUser();
         mountainsRef = storage.getReference().child("/images/" + currentUser.getUid());
         mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
     }
@@ -264,13 +266,13 @@ public class MainActivity extends AppCompatActivity {
             if (i % 2 == 0) {
                 List<Messages> messagesList = new ArrayList<>();
                 for (int j = 1; j <= 3; j++) {
-                    messagesList.add(new Messages("aaaaaa - "+ j, date, "aaa - " + j));
+                    messagesList.add(new Messages("aaaaaa - "+ j, date, "aaa - " + j, currentLoggedUser));
                 }
                 listaGrupos.add(new Groups(R.drawable.ic_emoji, messagesList));
             } else {
                 List<Messages> messagesList = new ArrayList<>();
                 for (int j = 1; j <= 3; j++) {
-                    messagesList.add(new Messages("bbbbbb - "+ j, date, "bbb - " + j));
+                    messagesList.add(new Messages("bbbbbb - "+ j, date, "bbb - " + j, currentLoggedUser));
                 }
                 listaGrupos.add(new Groups(R.drawable.logo, messagesList));
             }
