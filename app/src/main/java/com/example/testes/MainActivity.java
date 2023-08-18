@@ -52,6 +52,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import com.example.testes.contact.Adapter;
 import com.example.testes.contact.Contact;
@@ -62,6 +63,9 @@ import com.example.testes.friends.FriendsActivity;
 import com.example.testes.messages.AdapterMessages;
 import com.example.testes.messages.Messages;
 import com.example.testes.perfil.PerfilActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
@@ -89,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText inputMessage;
     FirebaseStorage storage;
     StorageReference mountainsRef;
+    private Uri selectedImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        mountainsRef = storage.getReference().child("imagens/" + currentUser.getEmail() + ".jpg");
+        mountainsRef = storage.getReference().child("/images/" + currentUser.getUid());
         mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
     }
 
@@ -193,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
     // a
     private void showCustomDialog() {
         final Dialog dialog = new Dialog(MainActivity.this);
+        System.out.println(FirebaseAuth.getInstance().getCurrentUser().getUid());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.seletor_imagem_dialog);
@@ -206,37 +212,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         enviarImagem.setOnClickListener(view -> {
-            enviarImagemFireStorege(dialog);
+            coletandoImagem(dialog);
         });
         dialog.show();
     }
 
-    private void enviarImagemFireStorege(Dialog dialog) {
+    private void coletandoImagem(Dialog dialog) {
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Enviando");
         progressDialog.show();
         iconeUsuario.setDrawingCacheEnabled(true);
         iconeUsuario.buildDrawingCache();
-        Bitmap bitmap = ((BitmapDrawable) iconeUsuario.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
-        byte[] data = baos.toByteArray();
+        enviarImagemFireBase(dialog, progressDialog);
+    }
 
-        UploadTask uploadTask = mountainsRef.putBytes(data);
-        uploadTask.addOnFailureListener(exception -> {
-            progressDialog.dismiss();
-            Toast.makeText(getApplicationContext(), "Falha ao enviar a imagem", Toast.LENGTH_SHORT).show();
-        }).addOnSuccessListener(taskSnapshot -> {
-            progressDialog.dismiss();
-            dialog.dismiss();
-        });
+    private void enviarImagemFireBase(Dialog dialog, ProgressDialog progressDialog) {
+        String filename = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final StorageReference ref = FirebaseStorage.getInstance().getReference("/images/" + filename);
+        ref.putFile(selectedImageUri)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                            Toast.makeText(MainActivity.this, "Imagem enviada com sucesso", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            progressDialog.dismiss();
+                        });
+                    }})
+                .addOnFailureListener(e -> {
+                    Toast.makeText(MainActivity.this, "Erro ao enviar imagem", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    Uri selectedImageUri = result.getData().getData();
+                    selectedImageUri = result.getData().getData();
                     iconeUsuario.setImageURI(selectedImageUri);
                 }
             }

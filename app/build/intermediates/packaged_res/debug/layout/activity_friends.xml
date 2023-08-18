@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".friends.FriendsActivity"
+    android:background="@color/backgroundPadrao">
+
+    <RelativeLayout
+        android:id="@+id/menu_navbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/backgroundInputPadrao"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <ImageView
+            android:id="@+id/settings"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            app:layout_constraintBottom_toBottomOf="@id/menu_navbar"
+            app:srcCompat="@drawable/ic_settings_foreground"
+            tools:ignore="NotSibling" />
+
+
+            <ImageView
+                android:id="@+id/search"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="100dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                app:layout_constraintBottom_toBottomOf="@id/menu_navbar"
+                app:srcCompat="@drawable/search_foreground"
+                tools:ignore="NotSibling" />
+
+
+        <ImageView
+            android:id="@+id/chat"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="190dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            app:layout_constraintBottom_toBottomOf="@id/menu_navbar"
+            app:srcCompat="@drawable/logo"
+            tools:ignore="NotSibling" />
+
+        <RelativeLayout
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="260dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/selected_bottom_menu_background">
+        <ImageView
+            android:id="@+id/friends"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            app:layout_constraintBottom_toBottomOf="@id/menu_navbar"
+            app:srcCompat="@drawable/ic_friends_foreground"
+            tools:ignore="NotSibling" />
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/profile"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="340dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/perfil_background"
+            app:layout_constraintBottom_toBottomOf="@id/menu_navbar"
+            tools:ignore="NotSibling" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/backgroundInputPadrao"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/frieds_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="28dp"
+            android:text="Amigos"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/menu_navbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.079"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="NotSibling" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="369dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="28dp"
+            app:srcCompat="@drawable/adicionar_usuario_1" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/divider_online"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/backgroundInputPadrao"
+        app:layout_constraintBottom_toTopOf="@id/online_friends"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        tools:ignore="MissingConstraints" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/online_friends"
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        app:layout_constraintBottom_toTopOf="@id/divider_offline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider_online">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/divider_offline"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="40dp"
+        android:background="@color/backgroundInputPadrao"
+        app:layout_constraintBottom_toTopOf="@id/offline_friends"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/online_friends"
+        tools:ignore="MissingConstraints" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/offline_friends"
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/menu_navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/online_friends"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/online"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="Amigos online - 50+"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/divider_online"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/online2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="Amigos offline - 50+"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/divider_offline"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
