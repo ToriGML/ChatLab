@@ -1,5 +1,7 @@
 package com.example.testes;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -15,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -55,6 +58,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.util.Util;
 import com.example.testes.contact.Adapter;
 import com.example.testes.contact.Contact;
 import com.example.testes.groups.AdapterGroups;
@@ -106,6 +110,11 @@ public class MainActivity extends AppCompatActivity {
         profile = findViewById(R.id.profile);
         inputMessage = findViewById(R.id.editTextTextPersonName);
 
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        currentLoggedUser = mAuth.getCurrentUser();
+        mountainsRef = FirebaseStorage.getInstance().getReference().child("/images/" + currentLoggedUser.getUid());
+        mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
+
 ///////////////Banco de dados/////////////////////////////////////////
         List<Messages> messagesList = new ArrayList<>();
         for (int j = 1; j <= 50; j++) {
@@ -121,6 +130,19 @@ public class MainActivity extends AppCompatActivity {
         trocarChat(messagesList);
 
         copularGrupos();
+
+        System.out.println(listaGrupos.get(0).getUuid());
+
+//        for (Groups groups:listaGrupos) {
+//            FirebaseFirestore.getInstance().collection("grupos").document(groups.getUuid().toString())
+//                    .set(groups)
+//                    .addOnSuccessListener(documentReference -> {
+//                        Log.d(TAG, "DocumentSnapshot added with ID: " + groups.getUuid());
+//                    }).addOnFailureListener(e -> {
+//                        Log.w(TAG, "Error adding document", e);
+//                    });
+//            System.out.println("Nova mensagem no grupo: ");
+//        }
 
         groups.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
@@ -139,10 +161,7 @@ public class MainActivity extends AppCompatActivity {
                         selectedGroup = position;
                         System.out.println("Clicou no item: " + position);
                         AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
-                        //Group grupo = adapterGroups.getItem(position)
-                        //List<Messages> messagesList = chamando o banco com o id do grupo: grupo.getId()
                         List<Messages> messagesList = adapterGroups.getItem(position).getMessagesList();
-                        trocarChat(messagesList);
                     }
                 }
                 return result;
@@ -176,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
             groupMessages.add(new Messages(inputMessage.getText().toString(), date, currentLoggedUser.getEmail(), currentLoggedUser));
             inputMessage.setText("");
             trocarChat(groupMessages);
-            System.out.println("Nova mensagem no grupo: " + selectedGroup);
         });
 
         profile = findViewById(R.id.profile);
@@ -197,13 +215,6 @@ public class MainActivity extends AppCompatActivity {
         settings.setOnClickListener(v -> showDialogSettings());
         search = findViewById(R.id.search);
         search.setOnClickListener(v -> showDialogSearch());
-
-        storage = FirebaseStorage.getInstance();
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        currentLoggedUser = mAuth.getCurrentUser();
-        mountainsRef = storage.getReference().child("/images/" + currentUser.getUid());
-        mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
     }
 
     private void trocarChat(List<Messages> messagesList) {
@@ -292,22 +303,25 @@ public class MainActivity extends AppCompatActivity {
         listaGrupos = new ArrayList<>();
         LocalDateTime currentDateTime = LocalDateTime.now();
         Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        for (int i = 1; i <= 50; i++) {
-            if (i % 2 == 0) {
-                List<Messages> messagesList = new ArrayList<>();
-                for (int j = 1; j <= 3; j++) {
-                    messagesList.add(new Messages("aaaaaa - "+ j, date, "aaa - " + j, currentLoggedUser));
-                }
-                listaGrupos.add(new Groups(R.drawable.ic_emoji, messagesList));
-            } else {
-                List<Messages> messagesList = new ArrayList<>();
-                for (int j = 1; j <= 3; j++) {
-                    messagesList.add(new Messages("bbbbbb - "+ j, date, "bbb - " + j, currentLoggedUser));
-                }
-                listaGrupos.add(new Groups(R.drawable.logo, messagesList));
+        List<Messages> messagesList = new ArrayList<>();
+        for (int j = 1; j <= 3; j++) {
+            messagesList.add(new Messages("aaaaaa - "+ j, date, "aaa - " + j, currentLoggedUser));
+        }
+        List<FirebaseUser> users = new ArrayList<>();
+        users.add(currentLoggedUser);
+        listaGrupos.add(new Groups(UUID.randomUUID(), R.drawable.ic_emoji, messagesList, users));
+        List<FirebaseUser> users2 = new ArrayList<>();
+        users.add(null);
+        listaGrupos.add(new Groups(UUID.randomUUID(), R.drawable.ic_emoji, messagesList, users2));
+
+        List<Groups> newGroupsList = new ArrayList<>();
+        for (Groups group: listaGrupos) {
+            if(group.verifyUser(currentLoggedUser.getUid())){
+                System.out.println(group);
+                newGroupsList.add(group);
             }
         }
-        AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
+        AdapterGroups adapterGroups = new AdapterGroups(newGroupsList);
         groups.setAdapter(adapterGroups);
     }
 ///////////////////////////////////////////////////////////////////////
