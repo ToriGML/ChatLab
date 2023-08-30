@@ -89,6 +89,7 @@ id offline_friends
 id online
 id online2
 id online_friends
+id perfilPhoto
 id profile
 id profile_container
 id relativeLayout
