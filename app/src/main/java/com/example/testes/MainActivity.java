@@ -264,21 +264,11 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         ref.getDownloadUrl().addOnSuccessListener(uri -> {
                             Toast.makeText(MainActivity.this, "Imagem enviada com sucesso", Toast.LENGTH_SHORT).show();
-                            FirebaseFirestore.getInstance().collection("/usuarios")
-                                            .addSnapshotListener((value, error) -> {
-                                                if (error != null) {
-                                                    return;
-                                                }
-                                                for (int i = 0; i < value.getDocuments().size(); i++) {
-                                                    if (value.getDocuments().get(i).get("id").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                                        FirebaseFirestore.getInstance().collection("/usuarios")
-                                                                .document(value.getDocuments().get(i).getId())
-                                                                .update("imagemUrl", uri.toString());
-                                                    }
-                                                }
-                                            });
+                            FirebaseFirestore.getInstance().collection("usuarios")
+                                    .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .update("imagemUrl", uri.toString());
                             dialog.dismiss();
-                            progressDialog.dismiss();
+                            progressDialog.dismiss(); // att
                         });
                     }})
                 .addOnFailureListener(e -> {
