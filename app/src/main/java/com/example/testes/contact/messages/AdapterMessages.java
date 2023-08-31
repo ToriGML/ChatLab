@@ -1,4 +1,4 @@
-package com.example.testes.messages;
+package com.example.testes.contact.messages;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.testes.R;
-import com.example.testes.groups.Groups;
-import com.example.testes.groups.HolderGroups;
 
 import java.util.List;
 
@@ -21,6 +19,7 @@ public class AdapterMessages extends RecyclerView.Adapter<HolderMessages>{
     }
 
     public AdapterMessages(List<Messages> listaItens) {
+        System.out.println(listaItens);
         this.listaItens = listaItens;
     }
 
@@ -33,8 +32,8 @@ public class AdapterMessages extends RecyclerView.Adapter<HolderMessages>{
 
     @Override
     public void onBindViewHolder(@NonNull HolderMessages holder, int position) {
-        Messages mensagens = listaItens.get(position);
-        holder.bind(mensagens);
+
+        holder.bind(listaItens.get(position));
     }
 
     @Override

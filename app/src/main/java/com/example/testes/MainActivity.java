@@ -8,38 +8,30 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
@@ -47,36 +39,38 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.util.Util;
 import com.example.testes.contact.Adapter;
 import com.example.testes.contact.Contact;
 import com.example.testes.groups.AdapterGroups;
 import com.example.testes.groups.Groups;
 import com.example.testes.login.LoginActivity;
 import com.example.testes.friends.FriendsActivity;
-import com.example.testes.messages.AdapterMessages;
-import com.example.testes.messages.Messages;
+import com.example.testes.contact.messages.AdapterMessages;
+import com.example.testes.contact.messages.Messages;
 import com.example.testes.perfil.PerfilActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import com.example.testes.usuario.Usuario;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -115,26 +109,14 @@ public class MainActivity extends AppCompatActivity {
         mountainsRef = FirebaseStorage.getInstance().getReference().child("/images/" + currentLoggedUser.getUid());
         mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
 
-///////////////Banco de dados/////////////////////////////////////////
-        List<Messages> messagesList = new ArrayList<>();
-        for (int j = 1; j <= 50; j++) {
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
-            System.out.println("Hora atual (Date): " + date);
-            messagesList.add(new Messages("cccccc - "+ j, date, "ccc - " + j, null));
-        }
-//////////////////////////////////////////////////////////////////////
-
         groups = findViewById(R.id.grupos);
 
-        trocarChat(messagesList);
-
-        copularGrupos();
-
-        System.out.println(listaGrupos.get(0).getUuid());
+        popularGrupos();
 
 //        for (Groups groups:listaGrupos) {
-//            FirebaseFirestore.getInstance().collection("grupos").document(groups.getUuid().toString())
+//            System.out.println(groups.getUuid());
+//            FirebaseFirestore.getInstance().collection("grupos")
+//                    .document(groups.getUuid().toString())
 //                    .set(groups)
 //                    .addOnSuccessListener(documentReference -> {
 //                        Log.d(TAG, "DocumentSnapshot added with ID: " + groups.getUuid());
@@ -144,29 +126,44 @@ public class MainActivity extends AppCompatActivity {
 //            System.out.println("Nova mensagem no grupo: ");
 //        }
 
-        groups.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
-            private GestureDetector gestureDetector = new GestureDetector(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return true;
-                }
-            });
-
-            @Override
-            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                boolean result = gestureDetector.onTouchEvent(e);
-                if (result) {
-                    int position = rv.getChildAdapterPosition(rv.findChildViewUnder(e.getX(), e.getY()));
-                    if (position != RecyclerView.NO_POSITION) {
-                        selectedGroup = position;
-                        System.out.println("Clicou no item: " + position);
-                        AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
-                        List<Messages> messagesList = adapterGroups.getItem(position).getMessagesList();
-                    }
-                }
-                return result;
-            }
-        });
+//        groups.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
+//            private final GestureDetector gestureDetector = new GestureDetector(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
+//                @Override
+//                public boolean onSingleTapUp(MotionEvent e) {
+//                    return true;
+//                }
+//            });
+//
+//            @Override
+//            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+//                boolean result = gestureDetector.onTouchEvent(e);
+//                if (result) {
+//                    int position = rv.getChildAdapterPosition(rv.findChildViewUnder(e.getX(), e.getY()));
+//                    if (position != RecyclerView.NO_POSITION) {
+//                        selectedGroup = position;
+//                        System.out.println("Clicou no item: " + position);
+//                        AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
+//                        Groups grupo = adapterGroups.getItem(position);
+//                        System.out.println(grupo);
+//                        FirebaseFirestore.getInstance().collection("/grupos")
+//                                .document(grupo.getUuid().toString())
+//                                .get().addOnCompleteListener(task -> {
+//                                   if (task.isSuccessful()) {
+//                                       DocumentSnapshot document = task.getResult();
+//                                       if (document.exists()) {
+//                                            List<Messages> mensagens = (List<Messages>) document.get("messagesList");
+//                                            if (mensagens != null) {
+//                                                System.out.println(mensagens);
+//                                                trocarChat(mensagens);
+//                                            }
+//                                       }
+//                                   }
+//                                });
+//                    }
+//                }
+//                return result;
+//            }
+//        });
 
         FirebaseFirestore.getInstance().collection("/usuarios")
                 .addSnapshotListener((value, error) -> {
@@ -183,19 +180,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        sendIcon = findViewById(R.id.imagemSend);
-        sendIcon.setOnClickListener(view -> {
-            LocalDateTime currentDateTime = LocalDateTime.now();
-
-            Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
-            AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
-            System.out.println(selectedGroup);
-            List<Messages> groupMessages = adapterGroups.getItem(selectedGroup).getMessagesList();
-
-            groupMessages.add(new Messages(inputMessage.getText().toString(), date, currentLoggedUser.getEmail(), currentLoggedUser));
-            inputMessage.setText("");
-            trocarChat(groupMessages);
-        });
+//        sendIcon = findViewById(R.id.imagemSend);
+//        sendIcon.setOnClickListener(view -> {
+//            LocalDateTime currentDateTime = LocalDateTime.now();
+//
+//            Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
+//            AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
+//            System.out.println(selectedGroup);
+//            List<Messages> groupMessages = adapterGroups.getItem(selectedGroup).getMessagesList();
+//
+//            groupMessages.add(new Messages(inputMessage.getText().toString(), date, new Usuario(serializeFirebaseUser(currentLoggedUser)).getEmail(), new Usuario(serializeFirebaseUser(currentLoggedUser))));
+//            inputMessage.setText("");
+//            trocarChat(groupMessages);
+//        });
 
         profile = findViewById(R.id.profile);
         profile.setOnClickListener(view -> {
@@ -218,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void trocarChat(List<Messages> messagesList) {
+        System.out.println(messagesList);
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) RecyclerView messages = findViewById(R.id.mensagens);
         messages.setLayoutManager(new LinearLayoutManager(this));
         AdapterMessages adapterMessages = new AdapterMessages(messagesList);
@@ -287,34 +285,41 @@ public class MainActivity extends AppCompatActivity {
     );
 
 ///////////////Banco de dados/////////////////////////////////////////
-    private void copularGrupos(){
+    private void popularGrupos(){
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) RecyclerView groups = findViewById(R.id.grupos);
         groups.setLayoutManager(new LinearLayoutManager(this));
-        listaGrupos = new ArrayList<>();
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        List<Messages> messagesList = new ArrayList<>();
-        for (int j = 1; j <= 3; j++) {
-            messagesList.add(new Messages("aaaaaa - "+ j, date, "aaa - " + j, currentLoggedUser));
-        }
-        List<FirebaseUser> users = new ArrayList<>();
-        users.add(currentLoggedUser);
-        listaGrupos.add(new Groups(UUID.randomUUID(), R.drawable.ic_emoji, messagesList, users));
-        List<FirebaseUser> users2 = new ArrayList<>();
-        users.add(null);
-        listaGrupos.add(new Groups(UUID.randomUUID(), R.drawable.ic_emoji, messagesList, users2));
+        System.out.println("teste");
+        FirebaseFirestore.getInstance().collection("/grupos") // Substitua "grupos" pelo nome da sua coleção
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            List<Messages> interesses = (List<Messages>) document.get("messagesList");
+                            System.out.println(interesses);
+                            trocarChat(interesses);
+                        }
+                    }
+                });
 
-        List<Groups> newGroupsList = new ArrayList<>();
-        for (Groups group: listaGrupos) {
-            if(group.verifyUser(currentLoggedUser.getUid())){
-                System.out.println(group);
-                newGroupsList.add(group);
-            }
-        }
-        AdapterGroups adapterGroups = new AdapterGroups(newGroupsList);
-        groups.setAdapter(adapterGroups);
+//        List<Groups> newGroupsList = new ArrayList<>();
+//        for (Groups group: listaGrupos) {
+//            if(group.verifyUser(currentLoggedUser.getUid())){
+//                newGroupsList.add(group);
+//            }
+//        }
+//        AdapterGroups adapterGroups = new AdapterGroups(newGroupsList);
+//        groups.setAdapter(adapterGroups);
     }
 ///////////////////////////////////////////////////////////////////////
+
+
+    private Map<String, Object> serializeFirebaseUser(FirebaseUser user) {
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("id", user.getUid());
+        userData.put("email", user.getEmail());
+        userData.put("imagemUrl", user.getPhotoUrl());
+        // Add other necessary fields for your use case
+        return userData;
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private void showDialogSearch() {

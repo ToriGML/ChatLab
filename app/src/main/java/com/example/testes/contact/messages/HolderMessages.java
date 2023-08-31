@@ -1,15 +1,12 @@
-package com.example.testes.messages;
+package com.example.testes.contact.messages;
 
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextClock;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.testes.R;
-import com.example.testes.groups.Groups;
 
 import java.util.Calendar;
 import java.util.Date;
