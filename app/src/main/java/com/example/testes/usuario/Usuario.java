@@ -1,5 +1,7 @@
 package com.example.testes.usuario;
 
+import java.util.Map;
+
 public class Usuario {
 
     private String id;
@@ -11,6 +13,12 @@ public class Usuario {
     public Usuario(String id, String email) {
         this.id = id;
         this.email = email;
+    }
+
+    public Usuario(Map<String, Object> data) {
+        this.id = (String) data.get("id");
+        this.email = (String) data.get("email");
+        // Set other fields if necessary
     }
 
     public String getEmail() {
