@@ -41,7 +41,6 @@ public class AdapterGroups extends RecyclerView.Adapter<HolderGroups>{
     }
 
     public Groups getItem(int position) {
-
         return listaItens.get(position);
     }
 

@@ -23,21 +23,17 @@ public class Groups {
 
     public Groups(){}
 
-    public boolean verifyUser(String uuid){
-        for (Usuario user : this.getUsers()) {
-            if (user.getId().equals(uuid)){
-                return true;
-            }
-        }
-        return false;
-    }
-
     public List<Usuario> getUsers() {
         return users;
     }
 
-    public int getImagemId() {
-        return imageId;
+//    public int getImagemId() {
+//        return imageId;
+//    }
+
+
+    public void setUsers(List<Usuario> users) {
+        this.users = users;
     }
 
     public List<Messages> getMessagesList() {

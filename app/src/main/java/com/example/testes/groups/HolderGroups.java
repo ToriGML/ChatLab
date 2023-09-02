@@ -18,7 +18,7 @@ public class HolderGroups extends RecyclerView.ViewHolder{
     }
 
     public void bind(Groups grupo) {
-        imageView.setImageResource(grupo.getImagemId());
+//        imageView.setImageResource(grupo.getImagemId());
     }
 
 }

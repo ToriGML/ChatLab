@@ -15,10 +15,12 @@ public class Usuario {
         this.email = email;
     }
 
-    public Usuario(Map<String, Object> data) {
-        this.id = (String) data.get("id");
-        this.email = (String) data.get("email");
-        // Set other fields if necessary
+    public Usuario(String id, String email, String imagemUrl) {
+        this(id, email);
+        this.imagemUrl = imagemUrl;
+    }
+
+    public Usuario() {
     }
 
     public String getEmail() {
@@ -31,5 +33,14 @@ public class Usuario {
 
     public String getImagemUrl() {
         return imagemUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                ", imagemUrl='" + imagemUrl + '\'' +
+                '}';
     }
 }

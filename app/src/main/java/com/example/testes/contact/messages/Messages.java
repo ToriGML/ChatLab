@@ -11,11 +11,10 @@ public class Messages {
     private String user_nickname;
     private Usuario user;
 
-    public Messages(String text, Date time, String user_nickname, Usuario user) {
+    public Messages(String text, Date time, String user_nickname) {
         this.text = text;
         this.time = time;
         this.user_nickname = user_nickname;
-        this.user = user;
     }
 
     public Messages(){}

@@ -26,17 +26,17 @@ public class HolderMessages extends RecyclerView.ViewHolder{
 
     public void bind(Messages mensagens) {
         messageText.setText(mensagens.getText());
-        Date time = mensagens.getTime();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(time);
-
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
-        if(minute < 10){
-            messageDate.setText(hour + ":0" + minute);
-        }else{
-            messageDate.setText(hour + ":" + minute);
-        }
+//        Date time = mensagens.getTime();
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(time);
+//
+//        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+//        int minute = calendar.get(Calendar.MINUTE);
+//        if(minute < 10){
+//            messageDate.setText(hour + ":0" + minute);
+//        }else{
+//            messageDate.setText(hour + ":" + minute);
+//        }
 
         nameContato.setText(mensagens.getUser_nickname());
     }
