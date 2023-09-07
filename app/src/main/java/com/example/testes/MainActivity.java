@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import org.modelmapper.ModelMapper;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -72,8 +73,11 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
@@ -87,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private Dialog dialog;
     private List<Groups> listaGrupos;
+    private List<Groups> listaGrupos2 = new ArrayList<>();
     private RecyclerView groups;
     private Integer selectedGroup;
     private LinearLayout dialogRootLayout;
@@ -103,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
     private Uri selectedImageUri;
     FirebaseUser currentLoggedUser;
     private ImageView profile;
+    ListenerRegistration messageListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +124,28 @@ public class MainActivity extends AppCompatActivity {
         mountainsRef.getMetadata().addOnFailureListener(e -> showCustomDialog());
 
         groups = findViewById(R.id.grupos);
+
+//        List<Messages> messagesList = new ArrayList<>();
+//        LocalDateTime currentDateTime1 = LocalDateTime.now();
+//
+//        Date date1 = Date.from(currentDateTime1.atZone(ZoneId.systemDefault()).toInstant());
+//        messagesList.add(new Messages("teste", date1, currentLoggedUser.getEmail()));
+//        List<Usuario> usuarioList = new ArrayList<>();
+//        usuarioList.add(new Usuario(currentLoggedUser.getUid(), currentLoggedUser.getEmail(), "currentLoggedUser.getPhotoUrl().toString()"));
+//        usuarioList.add(new Usuario("nCkv6FlRwVSg5acOMXWYxiv6Ag33", "test3@gmail.com", "https://firebasestorage.googleapis.com/v0/b/chatlab-2.appspot.com/o/images%2FnCkv6FlRwVSg5acOMXWYxiv6Ag33?alt=media&token=16fe81ee-a181-4a5f-aa80-a9d531730b18"));
+//        listaGrupos2.add(new Groups("74982659-2024-84ca-a142-003c9b9a1140", 1, messagesList, usuarioList));
+//
+//        for (Groups groups:listaGrupos2) {
+//            System.out.println(groups.getUuid());
+//            FirebaseFirestore.getInstance().collection("grupos")
+//                    .document(groups.getUuid().toString())
+//                    .set(groups)
+//                    .addOnSuccessListener(documentReference -> {
+//                        Log.d(TAG, "DocumentSnapshot added with ID: " + groups.getUuid());
+//                    }).addOnFailureListener(e -> {
+//                        Log.w(TAG, "Error adding document", e);
+//                    });
+//        }
 
         popularGrupos();
 
@@ -138,7 +166,9 @@ public class MainActivity extends AppCompatActivity {
                         selectedGroup = position;
                         AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
                         Groups grupo = adapterGroups.getItem(position);
+                        String grupoId = grupo.getUuid();  // Obter o ID do grupo
                         trocarChat(grupo.getMessagesList());
+                        atualizarMensagens(grupoId);
                     }
                 }
                 return result;
@@ -162,26 +192,23 @@ public class MainActivity extends AppCompatActivity {
 
         sendIcon = findViewById(R.id.imagemSend);
         sendIcon.setOnClickListener(view -> {
-            if(selectedGroup != null){
+            if (selectedGroup != null) {
                 LocalDateTime currentDateTime = LocalDateTime.now();
-
                 Date date = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
-                AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
 
+                AdapterGroups adapterGroups = new AdapterGroups(listaGrupos);
                 List<Messages> groupMessages = adapterGroups.getItem(selectedGroup).getMessagesList();
-                Messages messages = new Messages(inputMessage.getText().toString(), date, "aaaaaa");
-                groupMessages.add(messages);
+
+                Messages messages = new Messages(inputMessage.getText().toString(), date, currentLoggedUser.getEmail());
+                adicionarMensagemAoGrupo(messages, adapterGroups.getItem(selectedGroup).getUuid());
+                atualizarMensagens(adapterGroups.getItem(selectedGroup).getUuid());
+//                groupMessages.add(messages);
                 inputMessage.setText("");
-//            adicionarMensagemAoGrupo(messages,adapterGroups.getItem(selectedGroup).getUuid());
-                trocarChat(groupMessages);
-            }else{
+//                trocarChat(groupMessages);
+            } else {
                 inputMessage.setText("");
             }
-
-
-
         });
-
         profile = findViewById(R.id.profile);
         profile.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, PerfilActivity.class);
@@ -202,38 +229,56 @@ public class MainActivity extends AppCompatActivity {
         search.setOnClickListener(v -> showDialogSearch());
     }
 
-//    private void adicionarMensagemAoGrupo(Messages mensagem, String grupoId) {
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        CollectionReference gruposRef = db.collection("grupos");
-//
-//        gruposRef.document("46161108-2024-48db-b241-300d6a6b0411").get()
-//                .addOnSuccessListener(documentSnapshot -> {
-//                    if (documentSnapshot.exists()) {
-//                        Groups seuObjeto = documentSnapshot.toObject(Groups.class);
-//
-//                        if (seuObjeto != null) {
-//                            seuObjeto.getMessagesList().add(mensagem);
-//
-//                            gruposRef.document("46161108-2024-48db-b241-300d6a6b0411").set(seuObjeto)
-//                                    .addOnSuccessListener(aVoid -> {
-//                                        trocarChat(seuObjeto.getMessagesList());
-//                                    })
-//                                    .addOnFailureListener(e -> {
-//                                    });
-//                        }
-//                    } else {
-//                    }
-//                })
-//                .addOnFailureListener(e -> {
-//                });
-//    }
+    private void adicionarMensagemAoGrupo(Messages mensagem, String grupoId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference gruposRef = db.collection("grupos");
+
+        gruposRef.document(grupoId).update(
+                "messagesList", FieldValue.arrayUnion(mensagem)
+        ).addOnSuccessListener(aVoid -> {
+            Log.d(TAG, "Mensagem adicionada com sucesso!");
+        }).addOnFailureListener(e -> {
+            Log.w(TAG, "Erro ao adicionar mensagem", e);
+        });
+    }
 
     private void trocarChat(List<Messages> messagesList) {
+        System.out.println("\n\n\n\n"+messagesList+"\n\n\n\n");
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) RecyclerView messages = findViewById(R.id.mensagens);
         messages.setLayoutManager(new LinearLayoutManager(this));
         AdapterMessages adapterMessages = new AdapterMessages(messagesList);
         messages.setAdapter(adapterMessages);
+        int lastPosition = messages.getAdapter().getItemCount() - 1;
+        messages.scrollToPosition(lastPosition);
         drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    private void atualizarMensagens(String grupoId) {
+        FirebaseFirestore.getInstance()
+                .collection("/grupos")
+                .document(grupoId)
+                .collection("/messagesList")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        System.out.println(value);
+                        if (error != null) {
+                            System.out.println("aaaa" + error);
+                            return;
+                        } else if (!value.getDocumentChanges().isEmpty()) {
+                            List<Messages> messagesList = new ArrayList<>();
+                            System.out.println(value);
+                            for (DocumentChange doc : value.getDocumentChanges()) {
+                                Messages messages = doc.getDocument().toObject(Messages.class);
+                                messagesList.add(messages);
+                                System.out.println("Nova mensagem: " + messages.getText());
+                            }
+                            if (!messagesList.isEmpty()) {
+                                trocarChat(messagesList);
+                            }
+                        }
+                    }
+                });
     }
 
     // a
@@ -280,7 +325,8 @@ public class MainActivity extends AppCompatActivity {
                             dialog.dismiss();
                             progressDialog.dismiss(); // att
                         });
-                    }})
+                    }
+                })
                 .addOnFailureListener(e -> {
                     Toast.makeText(MainActivity.this, "Erro ao enviar imagem", Toast.LENGTH_SHORT).show();
                 });
@@ -296,8 +342,8 @@ public class MainActivity extends AppCompatActivity {
             }
     );
 
-///////////////Banco de dados/////////////////////////////////////////
-    private void popularGrupos(){
+    ///////////////Banco de dados/////////////////////////////////////////
+    private void popularGrupos() {
         ModelMapper modelMapper = new ModelMapper();
         List<Groups> newGrupoList = new ArrayList<>();
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) RecyclerView groups = findViewById(R.id.grupos);
@@ -309,21 +355,25 @@ public class MainActivity extends AppCompatActivity {
                             Groups grupo = new Groups();
                             modelMapper.map(document.getData(), grupo);
                             List<Object> userList = (List<Object>) document.getData().get("users");
-                            List<Usuario> usuarios = new ArrayList<>(); if (userList != null && !userList.isEmpty()) {  for (Object userObject : userList) {
-                                if (userObject instanceof Map) {
+                            List<Usuario> usuarios = new ArrayList<>();
+                            if (userList != null && !userList.isEmpty()) {
+                                for (Object userObject : userList) {
+                                    if (userObject instanceof Map) {
                                         Map<String, Object> userMap = (Map<String, Object>) userObject;
                                         String email = (String) userMap.get("email");
                                         String id = (String) userMap.get("id");
                                         String imagemUrl = (String) userMap.get("imagemUrl");
                                         Usuario usuario = new Usuario(id, email, imagemUrl);
+                                        Usuario usuario1 = new Usuario("liOJvaIklKbZScENfUREnXiMwGr2", "test@gmail.com", "https://firebasestorage.googleapis.com/v0/b/chatlab-2.appspot.com/o/images%2FliOJvaIklKbZScENfUREnXiMwGr2?alt=media&token=938beb5e-b06c-4b42-8e80-664e2e7a88b8");
                                         usuarios.add(usuario);
+                                        usuarios.add(usuario1);
                                     }
                                 }
 
                             }
                             grupo.setUsers(usuarios);
 
-                            if(!isNull(grupo.getUsers())) {
+                            if (!isNull(grupo.getUsers())) {
                                 for (Usuario user : grupo.getUsers()) {
                                     if (!isNull(user)) {
                                         if (currentLoggedUser.getUid().equals(user.getId())) {
@@ -530,7 +580,8 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.openDrawer(GravityCompat.START);
 
     }
-///////////////Banco de dados/////////////////////////////////////////
+
+    ///////////////Banco de dados/////////////////////////////////////////
     public static String generateName() {
         String[] firstNames = {"Alice", "Bob", "Claire", "David", "Emma", "Frank", "Grace", "Henry", "Isabella", "Jack",
                 "Kate", "Liam", "Mia", "Noah", "Olivia", "Paul", "Sophia", "Thomas", "Victoria", "William"};

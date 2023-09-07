@@ -19,7 +19,7 @@ public class AdapterMessages extends RecyclerView.Adapter<HolderMessages>{
     }
 
     public AdapterMessages(List<Messages> listaItens) {
-        System.out.println(listaItens);
+        System.out.println("aaaaa"+listaItens);
         this.listaItens = listaItens;
     }
 
